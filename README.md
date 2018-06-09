@@ -19,12 +19,7 @@ equivalência entre estados.
 Descrição:
 
 A aplicação faz a carga de tokens (palavras reservadas, operadores, símbolos especiais, ...) e Gramáticas
-Regulares (GR) a partir de um arquivo fonte (texto). Exemplo de arquivo de entrada:
-se
-entao
-senao
-<S>::= a<A> | e<A> | i<A> | o<A> | u<A>
-<A>::= a<A> | e<A> | i<A> | o<A> | u<A> | ε
+Regulares (GR) a partir de um arquivo fonte (texto).
 
 Usar notação BNF para as GRs.
 
