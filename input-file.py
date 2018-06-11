@@ -43,35 +43,50 @@ def bucaPosChar_afnd(char):
 
     for state in range(0,len(afnd)):
         if afnd[state][2] == char:
-            return state
-    return False
+            if afnd[state][0][0]:
+                return state
+    return -1
 
 state = 0
 for token in range(0, len(tokens)):
     for char in range(0, len(tokens[token])):
         
-        if char == 0: #ESTADO INICIAL
-
+        if char == 0: #ESTADO INICIAL TOKEN
             
             if not addedChar_afnd(tokens[token][char]):#NÃO FOI ADICIONADO
+
                 afnd.append([(True,state),[state+1],tokens[token][char]])
                 state = state + 1
+
             else:#JÁ FOI ADICIONADO
-                pos = bucaPosChar_afnd(tokens[token][char])
-                afnd[pos][1].append(state+1)
-                if not afnd[pos][0][0]: afnd[pos][0] = (True,afnd[pos][0][1])
+                
+                pos = bucaPosChar_afnd(tokens[token][char]) #ENCONTRA A POSIÇÃO NO AFND
+            
+                if afnd[pos][0][0]: #ESTADO INICIAL AFND
+                    afnd[pos][1].append(state+1)
+
+                else: #ESTADO NÃO INICIAL AFND
+                    afnd.append([(True,state),[state+1],tokens[token][char]])
+
                 state = state + 1
+                
 
         else: #ESTADO NÃO FINAL
+
+            #if not addedChar_afnd(tokens[token][char]):#NÃO FOI ADICIONADO
             afnd.append([(None,state),[state+1],tokens[token][char]])
             state = state + 1
 
-        
         #ADICIONA ESTADO FINAL
         if char == len(tokens[token])-1:
             afnd.append([(False,state),[None],None])
             state = state + 1
-                
+
+            
 print("True = Estado Inicial; False = Estado Final; None = Estado não final nem inicial\n")
 for state in range(0,len(afnd)):
     print(afnd[state])
+print('\n')
+for state in range(0,len(afnd)):
+    if afnd[state][0][0]:
+        print(afnd[state])
