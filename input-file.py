@@ -4,7 +4,7 @@ f = open('tokens_GRs.txt','r')
 for line in f:
     tokens.append(line)
 f.close()
-print (tokens,'TOKENS')
+print (tokens,'TOKENS DO ARQUIVO\n')
 
 #remove os '\n' dos tokens
 for i, token in enumerate(tokens):
@@ -14,21 +14,14 @@ for i, token in enumerate(tokens):
     tokens[i] = token
 
 #cria uma lista com a uniao dos caracteres dos tokens
-chars_tokens = []
+alphabet = []
 for i in range(0, len(tokens)):
     for j in range(0, len(tokens[i])):
-        if tokens[i][j] not in chars_tokens:
-            chars_tokens.append(tokens[i][j])
+        if tokens[i][j] not in alphabet:
+            alphabet.append(tokens[i][j])
 
-#cria lista contendo os caracteres iniciais de cada token
-first_chars_tokens = []
-for i in range(0, len(tokens)):
-    first_chars_tokens.append(tokens[i][0])
-
-print (tokens,'TOKENS')
-print (chars_tokens,'ALFABETO\n')
-print (first_chars_tokens,'SIMBOLOS INICIAIS\n')
-
+print (tokens,'TOKENS TRATADOS\n')
+print (alphabet,'ALFABETO\n')
 
 afnd = dict()
 
@@ -84,7 +77,7 @@ for token in range(0, len(tokens)):
 
             state = state + 1
 
-print("True = Estado Inicial; False = Estado Final; None = Estado não final nem inicial\n")
+print("\nTrue = Estado Inicial; False = Estado Final; None = Estado não final nem inicial\n")
 for state in range(0,len(afnd)):
     print(state,':',afnd[state])
 
