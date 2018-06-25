@@ -7,3 +7,6 @@ senao
 
 <S>::=x<A>|y<A>|z<A>|w<A>
 <A>::=x<A>|y<A>|z<A>|w<A>|&
+
+<S>::=g<S>|h<S>|<A>
+<A>::=g|h

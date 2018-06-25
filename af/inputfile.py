@@ -1,6 +1,7 @@
 import copy
+# from collections import OrderedDict
 
-EPSILON = '&'
+EPSILON = ''
 
 
 def is_sublist(sublist, list):
@@ -8,10 +9,11 @@ def is_sublist(sublist, list):
 
 
 class AFNDLine(dict):
-    def __init__(self, initial=False, final=False, *args, **kwargs):
+    def __init__(self, initial=False, final=False, error=False, *args, **kwargs):
         super(AFNDLine, self).__init__(*args, **kwargs)
         self.initial = initial
         self.final = final
+        self.error = error
 
 
 class Constructor(object):
@@ -24,6 +26,7 @@ class Constructor(object):
         self.alphabet = []  # alfabeto da linguagem
         self.initial_state = 0  # estado inicial
         self.state = 0  # estado incremento
+        self.error_state = None
         self.related_states = {}  # dicionário para relacionar indeterminismos à novos estados
         self.afnd_line(self.initial_state, initial=True)  # cria o estado inicial
 
@@ -34,22 +37,28 @@ class Constructor(object):
         for key, value in self.afnd.items():
             i = ''
             f = ''
+            e = ''
             if value.initial:
                 i = '->'
             if value.final:
                 f = '*'
-            print('{}{}{}: {}'.format(i, f, key, value))
+            if value.error:
+                e = '(E)'
+            print('{}{}{}{}: {}'.format(i, f, e, key, value))
 
     def print_afd(self):
         print('AFD:')
         for key, value in self.afd.items():
             i = ''
             f = ''
+            e = ''
             if value.initial:
                 i = '->'
             if value.final:
                 f = '*'
-            print('{}{}{}: {}'.format(i, f, key, value))
+            if value.error:
+                e = '(E)'
+            print('{}{}{}{}: {}'.format(i, f, e, key, value))
 
     def update_alphabet(self, symbols=None):
         """
@@ -109,6 +118,23 @@ class Constructor(object):
             if sym not in self.afd[state]:
                 self.afd[state][sym] = []
 
+    def clean_afd(self):
+        """
+        Limpa o AFD e adiciona o estado de erro nos não mapeados
+        """
+        if not self.error_state:
+            self.afd_line(self.state+1)
+            self.afd[self.state+1].error = True
+            self.error_state = self.state+1
+            self.state += 1
+
+        for state in list(self.afd):
+            for sym in self.alphabet:  # cria uma coluna para cada símbolo do alfabeto informado que ainda não existe
+                if (sym not in self.afd[state]) or (self.afd[state][sym] == []):
+                    self.afd[state][sym] = self.error_state
+                else:
+                    self.afd[state][sym] = self.afd[state][sym][0]
+
     def update_afnd(self):
         """
         Preenche as lacunas vazias do AFND
@@ -167,27 +193,16 @@ class Constructor(object):
                 if prod == '&':  # épsilon produção
                     final = True
                     continue
-                if prod.startswith('<'):  # GR linear à esquerda ou épsilon transição
-                    symbols = prod.split('>')
-
-                    if '<' in symbols[0]:  # símbolo à esquerda é realmente um não-terminal
-                        state = symbols[0].replace('<', '')
-                        try:
-                            symbol = symbols[1]
-                        except IndexError:
-                            symbol = EPSILON
-
-                    else:  # há somente um símbolo terminal, deve ir para um estado final padrão
-                        state = '#'
-                        symbol = symbols[0]
-
-                else:  # GR linear à direita
+                elif prod.startswith('<'):  # épsilon transição
+                    state = prod.replace('<', '').replace('>', '')
+                    symbol = EPSILON
+                else:  # GR linear à direita (padrão adotado)
                     symbols = prod.split('<')
                     symbol = symbols[0]
 
                     try:
                         state = symbols[1].replace('>', '')
-                    except IndexError:  # há somente um símbolo terminal, deve ir para um estado final padrão
+                    except IndexError:  # há somente um símbolo terminal, deve ir para um estado de erro padrão
                         state = '#'
 
                 new_data[symbol] = state
@@ -230,8 +245,6 @@ class Constructor(object):
                                                dest_final=(i == len(token)-1))
 
                         self.state += 1
-
-                self.state += 1
             # GR
             else:
                 lines = block.splitlines()
@@ -246,14 +259,14 @@ class Constructor(object):
 
                     # assimila símbolos não-terminais à números de estados
                     if key not in related_states:
-                        related_states[key] = self.state
+                        related_states[key] = self.state+1
                         self.state += 1
 
                     for prod, state in prod_data.items():
 
                         # assimila símbolos não-terminais à números de estados
                         if state not in related_states:
-                            related_states[state] = self.state
+                            related_states[state] = self.state+1
                             self.state += 1
 
                         self.add_afnd_step(origin_state=related_states[key],
@@ -262,7 +275,7 @@ class Constructor(object):
                                            origin_initial=False,
                                            origin_final=final,
                                            dest_initial=False,
-                                           dest_final=False)
+                                           dest_final=True if state == '#' else False)
 
         self.update_afnd()  # atualiza preenchendo as colunas vazias
 
@@ -270,6 +283,8 @@ class Constructor(object):
         changed = self.afnd_determinization()  # determiniza o afnd
         while changed:
             changed = self.afnd_determinization()
+
+        self.clean_afd()  # limpa o AFD e adiciona o estado de erro
 
     def afnd_determinization(self):
         """
@@ -297,7 +312,7 @@ class Constructor(object):
                             break
 
                     if new_state not in self.related_states:
-                        self.related_states[new_state] = self.state
+                        self.related_states[new_state] = self.state+1
                         self.state += 1
 
                     self.add_afd_step(origin_state=state,
