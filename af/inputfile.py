@@ -283,6 +283,11 @@ class Constructor(object):
                 del self.afd[state]
 
     def _get_epsilon(self, path=[], epsilon_states=[]):
+        """
+        Chamada recursiva para obter as transições por EPSILON entre os estados
+        :param path: list: caminho atual
+        :param epsilon_states: estados que estão na transição por EPSILON do último estado do caminho
+        """
         if epsilon_states:
             for state in epsilon_states:
                 path.append(state)
@@ -298,6 +303,11 @@ class Constructor(object):
                 self.epsilon_paths.append(path)
 
     def get_epsilon(self, state):
+        """
+        Carrega uma lista de listas, onde cada lista interna é uma transição por épsilon entre os seus estados
+        :param state: int: estado inicial
+        :return: list: transições por EPSILON
+        """
         self._get_epsilon([state], self.afnd[state][EPSILON])
         return self.epsilon_paths
 
@@ -310,23 +320,24 @@ class Constructor(object):
                 self.get_epsilon(state)
 
             for path in self.epsilon_paths:
-                main_state = path[0]
-                for state in path[1:]:
-                    for symbol in list(self.afnd[main_state]):
+                main_state = path[0]  # o primeiro estado da transição receberá as mudanças
+                for state in path[1:]:  # para cada um dos demais estados
+                    for symbol in list(self.afnd[main_state]):  # as produções desse estado irão para o principal
                         self.afnd[main_state][symbol] = list(set(self.afnd[main_state][symbol]+self.afnd[state][symbol]))
-                    for st, line in self.afnd.items():
+                    for st, line in self.afnd.items():  # os caminhos que levam ao estado agora levarão ao principal
                         for symbol in list(line):
                             if state in self.afnd[st][symbol]:
                                 self.afnd[st][symbol].remove(state)
                                 if main_state not in self.afnd[st][symbol]:
                                     self.afnd[st][symbol].append(main_state)
 
-                    if self.afnd[state].final:
+                    if self.afnd[state].final:  # se o estado é final, o estado principal também será
                         self.afnd[main_state].final = True
 
+                    # excluímos o estado
                     del self.afnd[state]
 
-            # remove as transições do AFND e o símbolo do alfabeto
+            # remove as transições por EPSILON do AFND e o símbolo do alfabeto
             for state in list(self.afnd):
                 del self.afnd[state][EPSILON]
             self.alphabet.remove(EPSILON)
