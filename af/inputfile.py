@@ -27,7 +27,7 @@ class Constructor(object):
         self.initial_state = 0  # estado inicial
         self.state = 0  # estado incremento
         self.error_state = None  # estado de erro
-        self.reachable = []  # lista de estados atingíveis à partir de initial_state
+        self.keep = []  # lista de estados atingíveis e vivos
         self.related_states = {}  # dicionário para relacionar indeterminismos à novos estados
         self.afnd_line(self.initial_state, initial=True)  # cria o estado inicial
 
@@ -210,47 +210,40 @@ class Constructor(object):
 
         return new_data, final
 
-    def _get_reachable(self, current_state, stop):
+    def _get_keep(self, current_state, stop):
         """
-        Função recursiva que obtém os estados atingíveis
+        Função recursiva que obtém os estados que devemos manter
         :param current_state: int: estado atual
         :param stop: bool: flag para parar a recursão, é passado se o estado atual é um estado de erro, então pára
         """
-        if current_state not in self.reachable:
-            self.reachable.append(current_state)
+        if current_state not in self.keep:
+            self.keep.append(current_state)
         if stop is False:
             values = list(set(self.afd[current_state].values()))
             if current_state in values:
                 values.remove(current_state)
             for state in values:
-                self._get_reachable(state, self.afd[state].error)
+                self._get_keep(state, self.afd[state].error or self.afd[state].error)
 
-    def get_reachable(self, state, stop=False):
+    def get_keep(self, state, stop=False):
         """
-        Obtém apenas os estados atingíveis, partindo do estado inicial e chamando recursivamente para
+        Obtém apenas os estados atingíveis ou vivos, partindo do estado inicial e chamando recursivamente para
         cada estado atingido
         :param state: int: estado inicial
         :param stop: bool: indica o estado inicial da recursão
-        :return: list: lista com os números dos estados atingíveis
+        :return: list: lista com os números dos estados que devemos manter
         """
-        self._get_reachable(state, stop)
-        return self.reachable
+        self._get_keep(state, stop)
+        return self.keep
 
-    def remove_unreachable(self):
+    def remove_dead_and_unreachable(self):
         """
         Remove os estados inatingíveis do AFD
         """
-        reachable = self.get_reachable(self.initial_state)
+        keep = self.get_keep(self.initial_state)
         for state in list(self.afd):
-            if state not in reachable:
+            if state not in keep:
                 del self.afd[state]
-
-    def remove_dead(self):
-        """
-        Remove os estados mortos: não é possível alcançar um estado final à partir deles
-        """
-        # for state in list(self.afd):
-        pass
 
     def fill_afnd(self):
         """
@@ -328,7 +321,7 @@ class Constructor(object):
             changed = self.afnd_determinization()
 
         self.clean_afd()  # limpa o AFD e adiciona o estado de erro
-        self.remove_unreachable()  # remove os estados inatingíveis
+        self.remove_dead_and_unreachable()  # remove os estados inatingíveis e mortos
 
     def afnd_determinization(self):
         """
