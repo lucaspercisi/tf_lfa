@@ -30,6 +30,7 @@ class Constructor(object):
         self.reachable = []  # lista de estados atingíveis
         self.alive = []  # lista de estados vivos
         self.test_alive = []  # lista auxiliar de testes de estados vivos
+        self.epsilon_paths = []  # lista de listas com os conjuntos de epsilon transição
         self.related_states = {}  # dicionário para relacionar indeterminismos à novos estados
         self.afnd_line(self.initial_state, initial=True)  # cria o estado inicial
 
@@ -281,27 +282,54 @@ class Constructor(object):
             if state not in keep:
                 del self.afd[state]
 
-    def get_epsilon_states(self, state):
-        states = [state]
+    def _get_epsilon(self, path=[], epsilon_states=[]):
+        if epsilon_states:
+            for state in epsilon_states:
+                path.append(state)
+                self._get_epsilon(path, self.afnd[state][EPSILON])
+        elif len(path) > 1:
+            add = True
+            for l in self.epsilon_paths:
+                if is_sublist(path, l):
+                    add = False
+                    break
 
-        def recurse(current_state, stop):
-            if current_state not in states:
-                states.append(current_state)
-            if not stop:
-                for child_state in self.afnd[state][EPSILON]:
-                    recurse(child_state, self.afnd[child_state][EPSILON] == [])
+            if add:
+                self.epsilon_paths.append(path)
 
-        recurse(state, self.afnd[state][EPSILON] == [])
-        return states
+    def get_epsilon(self, state):
+        self._get_epsilon([state], self.afnd[state][EPSILON])
+        return self.epsilon_paths
 
     def remove_epsilon(self):
         """
         Remove as transições por EPSILON
         """
-        if EPSILON in self.alphabet:  # verifica se há transições por EPSILON
+        if EPSILON in self.alphabet:  # verifica se há transições por EPSILON no AFND
+            for state in list(self.afnd):  # cria os caminhos das transições
+                self.get_epsilon(state)
+
+            for path in self.epsilon_paths:
+                main_state = path[0]
+                for state in path[1:]:
+                    for symbol in list(self.afnd[main_state]):
+                        self.afnd[main_state][symbol] = list(set(self.afnd[main_state][symbol]+self.afnd[state][symbol]))
+                    for st, line in self.afnd.items():
+                        for symbol in list(line):
+                            if state in self.afnd[st][symbol]:
+                                self.afnd[st][symbol].remove(state)
+                                if main_state not in self.afnd[st][symbol]:
+                                    self.afnd[st][symbol].append(main_state)
+
+                    if self.afnd[state].final:
+                        self.afnd[main_state].final = True
+
+                    del self.afnd[state]
+
+            # remove as transições do AFND e o símbolo do alfabeto
             for state in list(self.afnd):
-                epsilon_states = self.get_epsilon_states(state)
-                print(epsilon_states)
+                del self.afnd[state][EPSILON]
+            self.alphabet.remove(EPSILON)
 
     def fill_afnd(self):
         """
@@ -372,7 +400,7 @@ class Constructor(object):
                                            dest_final=True if state == '#' else False)
 
         self.update_afnd()  # atualiza preenchendo as colunas vazias
-        # self.remove_epsilon()  # remove os EPSILON transições
+        self.remove_epsilon()  # remove os EPSILON transições
 
         self.afd = copy.deepcopy(self.afnd)  # cria uma cópia do AFND para o AFD que vamos mexer
         changed = self.afnd_determinization()  # determiniza o afnd
