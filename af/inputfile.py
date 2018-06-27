@@ -255,7 +255,7 @@ class Constructor(object):
         :param reachable_states: list: estados atingíveis pelo último estado do caminho
         """
         for reach in reachable_states:
-            if self.afd[reach].final and not is_sublist(path, self.alive):
+            if (self.afd[reach].final or reach == self.error_state) and not is_sublist(path, self.alive):
                 self.alive += path
         if self.test_alive:
             self.test_alive = set(self.test_alive) - set(path)
