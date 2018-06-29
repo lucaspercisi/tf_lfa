@@ -1,7 +1,7 @@
 import copy
 # from collections import OrderedDict
 
-EPSILON = ''
+EPSILON = '&'
 
 
 def is_sublist(sublist, list):
@@ -194,7 +194,7 @@ class Constructor(object):
             prod = prod.strip()  # elimina eventuais espaços extras entre | e a produção
 
             if prod:
-                if prod == '&':  # épsilon produção
+                if prod == EPSILON:  # épsilon produção
                     final = True
                     continue
                 elif prod.startswith('<'):  # épsilon transição
