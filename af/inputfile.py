@@ -1,5 +1,5 @@
+import csv
 import copy
-# from collections import OrderedDict
 
 EPSILON = '&'
 
@@ -35,9 +35,9 @@ class Constructor(object):
         self.afnd_line(self.initial_state, initial=True)  # cria o estado inicial
 
     def print_afnd(self):
-        print('Tokens encontrados: {}'.format(self.tokens))
-        print('Alfabeto da linguagem: {}'.format(self.alphabet))
-        print('AFND:')
+        print('-------------------------------------------------------------------------------------------------------')
+        print('----------------------------------------------<<< AFND >>>---------------------------------------------')
+        print('-------------------------------------------------------------------------------------------------------')
         for key, value in self.afnd.items():
             i = ''
             f = ''
@@ -51,7 +51,9 @@ class Constructor(object):
             print('{}{}{}{}: {}'.format(i, f, e, key, value))
 
     def print_afd(self):
-        print('AFD:')
+        print('-------------------------------------------------------------------------------------------------------')
+        print('----------------------------------------------<<< AFD >>>----------------------------------------------')
+        print('-------------------------------------------------------------------------------------------------------')
         for key, value in self.afd.items():
             i = ''
             f = ''
@@ -243,9 +245,12 @@ class Constructor(object):
         Remove os estados inatingíveis do AFD
         """
         keep = self.get_reachable(self.initial_state)
-        for state in list(self.afd):
-            if state not in keep:
-                del self.afd[state]
+        unreachable = list(set(self.afd.keys()).difference(keep))
+
+        print('\n\nRemovendo estados inalcançáveis {}\n'.format(unreachable))
+
+        for state in unreachable:
+            del self.afd[state]
 
     def _get_alive(self, path=[], reachable_states=[]):
         """
@@ -278,9 +283,12 @@ class Constructor(object):
         Remove os estados mortos do AFD
         """
         keep = self.get_alive(self.initial_state)
-        for state in list(self.afd):
-            if state not in keep:
-                del self.afd[state]
+        dead = list(set(self.afd.keys()).difference(keep))
+
+        print('\nRemovendo estados mortos {}\n\n'.format(dead))
+
+        for state in dead:
+            del self.afd[state]
 
     def _get_epsilon(self, path=[], epsilon_states=[]):
         """
@@ -319,6 +327,8 @@ class Constructor(object):
             for state in list(self.afnd):  # cria os caminhos das transições
                 self.get_epsilon(state)
 
+            print('\n\nRemovendo as épsilon transições {}\n\n'.format(self.epsilon_paths))
+
             for path in self.epsilon_paths:
                 main_state = path[0]  # o primeiro estado da transição receberá as mudanças
                 for state in path[1:]:  # para cada um dos demais estados
@@ -346,6 +356,8 @@ class Constructor(object):
         """
         Preenche o autômato finito com os dados informados no arquivo
         """
+        print('Carregando dados do arquivo de entrada "{}" ...\n\n'.format(self.file.name))
+
         blocks = self.file.read().split('\n\n')  # quebra o arquivo em blocos de tokens e/ou GRs
 
         # identifica cada bloco se é de tokens ou uma GR
@@ -411,20 +423,25 @@ class Constructor(object):
                                            dest_final=True if state == '#' else False)
 
         self.update_afnd()  # atualiza preenchendo as colunas vazias
-        self.remove_epsilon()  # remove os EPSILON transições
-
-        self.afd = copy.deepcopy(self.afnd)  # cria uma cópia do AFND para o AFD que vamos mexer
-        changed = self.afnd_determinization()  # determiniza o afnd
-        while changed:
-            changed = self.afnd_determinization()
-
-        self.clean_afd()  # limpa o AFD e adiciona o estado de erro
-        self.remove_unreachable()  # remove os estados inatingíveis
-        self.remove_dead()  # remove os estados mortos
 
     def afnd_determinization(self):
         """
         Cria uma cópia do AFND e determiniza esta cópia
+        """
+        print('\n\nDeterminizando o AFND...\n\n')
+
+        if not self.afd:
+            self.afd = copy.deepcopy(self.afnd)  # cria uma cópia do AFND para o AFD que vamos mexer
+
+        changed = self._afnd_determinization()  # determiniza o afnd
+        while changed:  # continua a determinização enquanto houver alterações no autômato
+            changed = self._afnd_determinization()
+
+        self.clean_afd()  # limpa o AFD e adiciona o estado de erro
+
+    def _afnd_determinization(self):
+        """
+        Determiniza o AFND
         """
         changed = False
 
@@ -468,6 +485,25 @@ class Constructor(object):
 
         return changed
 
+    def export_csv(self, path_to_file):
+        """
+        Exporta o AFD para um arquivo CSV
+        :param path_to_file: str: caminho do arquivo
+        """
+        print('\n\nExportando AFD para o arquivo "{}" ...'.format(path_to_file))
+
+        csv_file = open(path_to_file, 'w')
+        writer = csv.writer(csv_file)
+        self.alphabet.sort()
+        writer.writerow(['']+self.alphabet)
+
+        for state in list(self.afd):
+            state_str = '{}{}{}{}'.format('->' if self.afd[state].initial else '',
+                                          '*' if self.afd[state].final else '',
+                                          '(E)' if self.afd[state].error else '',
+                                          state)
+            writer.writerow([state_str]+[self.afd[state][symbol] for symbol in self.alphabet])
+
     def token_recognition(self, token=''):
         """
         Faz o reconhecimento de um token utilizando o AFD
@@ -483,7 +519,6 @@ class Constructor(object):
 
         for letter in token:
             line = self.afd[state]
-            letter = letter.lower()
 
             if letter not in self.alphabet:
                 message = 'Letra "{}" não pertence ao alfabeto da linguagem'.format(letter)
