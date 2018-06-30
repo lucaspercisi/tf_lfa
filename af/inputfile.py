@@ -298,8 +298,7 @@ class Constructor(object):
         """
         if epsilon_states:
             for state in epsilon_states:
-                path.append(state)
-                self._get_epsilon(path, self.afnd[state][EPSILON])
+                self._get_epsilon(path+[state], self.afnd[state][EPSILON])
         elif len(path) > 1:
             add = True
             for l in self.epsilon_paths:
@@ -316,7 +315,8 @@ class Constructor(object):
         :param state: int: estado inicial
         :return: list: transições por EPSILON
         """
-        self._get_epsilon([state], self.afnd[state][EPSILON])
+        for state in list(self.afnd):
+            self._get_epsilon([state], self.afnd[state][EPSILON])
         return self.epsilon_paths
 
     def remove_epsilon(self):
