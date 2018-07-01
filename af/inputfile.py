@@ -329,7 +329,11 @@ class Constructor(object):
 
             print('\n\nRemovendo as épsilon transições {}\n\n'.format(self.epsilon_paths))
 
-            for path in self.epsilon_paths:
+            self.epsilon_paths.reverse()
+
+            for i in range(len(self.epsilon_paths)):
+                path = self.epsilon_paths[i]
+
                 main_state = path[0]  # o primeiro estado da transição receberá as mudanças
                 for state in path[1:]:  # para cada um dos demais estados
                     for symbol in list(self.afnd[main_state]):  # as produções desse estado irão para o principal
@@ -340,6 +344,12 @@ class Constructor(object):
                                 self.afnd[st][symbol].remove(state)
                                 if main_state not in self.afnd[st][symbol]:
                                     self.afnd[st][symbol].append(main_state)
+                    # atualizamos as épsilon transições também com os estados substitutos
+                    for p in self.epsilon_paths:
+                        if state in p:
+                            p.remove(state)
+                            if main_state not in p:
+                                p.append(main_state)
 
                     if self.afnd[state].final:  # se o estado é final, o estado principal também será
                         self.afnd[main_state].final = True
