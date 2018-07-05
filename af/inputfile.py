@@ -299,7 +299,7 @@ class Constructor(object):
         :param path: list: caminho atual
         :param epsilon_states: estados que estão na transição por EPSILON do último estado do caminho
         """
-        if epsilon_states:
+        if epsilon_states and not is_sublist(epsilon_states, path):  # loop de transições épsilon
             for state in epsilon_states:
                 self._get_epsilon(path+[state], self.afnd[state][EPSILON])
         elif len(path) > 1:
@@ -427,6 +427,12 @@ class Constructor(object):
 
         if not self.afd:
             self.afd = copy.deepcopy(self.afnd)  # cria uma cópia do AFND para o AFD que vamos mexer
+
+        # # trecho para testes
+        # changed = 0
+        # while changed < 2:
+        #     self._afnd_determinization()
+        #     changed += 1
 
         changed = self._afnd_determinization()  # determiniza o afnd
         while changed:  # continua a determinização enquanto houver alterações no autômato
