@@ -208,10 +208,13 @@ class Constructor(object):
 
                     try:
                         state = symbols[1].replace('>', '')
-                    except IndexError:  # há somente um símbolo terminal, deve ir para um estado de erro padrão
+                    except IndexError:  # há somente um símbolo terminal, deve ir para um estado final
                         state = '#'
 
-                new_data[symbol] = state
+                if symbol not in new_data:
+                    new_data[symbol] = [state]
+                elif state not in new_data[symbol]:
+                    new_data[symbol].append(state)
 
         return new_data, final
 
@@ -309,10 +312,9 @@ class Constructor(object):
             if add:
                 self.epsilon_paths.append(path)
 
-    def get_epsilon(self, state):
+    def get_epsilon(self):
         """
         Carrega uma lista de listas, onde cada lista interna é uma transição por épsilon entre os seus estados
-        :param state: int: estado inicial
         :return: list: transições por EPSILON
         """
         for state in list(self.afnd):
@@ -324,38 +326,21 @@ class Constructor(object):
         Remove as transições por EPSILON
         """
         if EPSILON in self.alphabet:  # verifica se há transições por EPSILON no AFND
-            for state in list(self.afnd):  # cria os caminhos das transições
-                self.get_epsilon(state)
+            self.get_epsilon()  # cria os caminhos das transições
 
             print('\n\nRemovendo as épsilon transições {}\n\n'.format(self.epsilon_paths))
-
-            self.epsilon_paths.reverse()
 
             for i in range(len(self.epsilon_paths)):
                 path = self.epsilon_paths[i]
 
                 main_state = path[0]  # o primeiro estado da transição receberá as mudanças
                 for state in path[1:]:  # para cada um dos demais estados
-                    for symbol in list(self.afnd[main_state]):  # as produções desse estado irão para o principal
-                        self.afnd[main_state][symbol] = list(set(self.afnd[main_state][symbol]+self.afnd[state][symbol]))
-                    for st, line in self.afnd.items():  # os caminhos que levam ao estado agora levarão ao principal
-                        for symbol in list(line):
-                            if state in self.afnd[st][symbol]:
-                                self.afnd[st][symbol].remove(state)
-                                if main_state not in self.afnd[st][symbol]:
-                                    self.afnd[st][symbol].append(main_state)
-                    # atualizamos as épsilon transições também com os estados substitutos
-                    for p in self.epsilon_paths:
-                        if state in p:
-                            p.remove(state)
-                            if main_state not in p:
-                                p.append(main_state)
+                    for symbol in list(self.afnd[main_state]):  # as produções desse estado também serão do principal
+                        if symbol != EPSILON:
+                            self.afnd[main_state][symbol] = list(set(self.afnd[main_state][symbol]+self.afnd[state][symbol]))
 
                     if self.afnd[state].final:  # se o estado é final, o estado principal também será
                         self.afnd[main_state].final = True
-
-                    # excluímos o estado
-                    del self.afnd[state]
 
             # remove as transições por EPSILON do AFND e o símbolo do alfabeto
             for state in list(self.afnd):
@@ -417,20 +402,20 @@ class Constructor(object):
                         related_states[key] = self.state+1
                         self.state += 1
 
-                    for prod, state in prod_data.items():
+                    for prod, states in prod_data.items():
+                        for state in states:
+                            # assimila símbolos não-terminais à números de estados
+                            if state not in related_states:
+                                related_states[state] = self.state+1
+                                self.state += 1
 
-                        # assimila símbolos não-terminais à números de estados
-                        if state not in related_states:
-                            related_states[state] = self.state+1
-                            self.state += 1
-
-                        self.add_afnd_step(origin_state=related_states[key],
-                                           dest_state=related_states[state],
-                                           symbol=prod,
-                                           origin_initial=False,
-                                           origin_final=final,
-                                           dest_initial=False,
-                                           dest_final=True if state == '#' else False)
+                            self.add_afnd_step(origin_state=related_states[key],
+                                               dest_state=related_states[state],
+                                               symbol=prod,
+                                               origin_initial=False,
+                                               origin_final=final,
+                                               dest_initial=False,
+                                               dest_final=True if state == '#' else False)
 
         self.update_afnd()  # atualiza preenchendo as colunas vazias
 
@@ -468,6 +453,8 @@ class Constructor(object):
 
                     dest_final = False
 
+                    state_is_new = False
+
                     # se um dos estados for final o novo também será
                     for s in state_list:
                         if self.afd[s].final:
@@ -477,6 +464,7 @@ class Constructor(object):
                     if new_state not in self.related_states:
                         self.related_states[new_state] = self.state+1
                         self.state += 1
+                        state_is_new = True
 
                     self.add_afd_step(origin_state=state,
                                       dest_state=self.related_states[new_state],
@@ -486,12 +474,20 @@ class Constructor(object):
                                       dest_initial=False,
                                       dest_final=dest_final)
 
-                    for s in state_list:
-                        for sy in list(self.afd[s]):
-                            states = self.afd[s][sy]
-                            self.afd[self.related_states[new_state]][sy] = list(set(self.afd[self.related_states[new_state]][sy]+states))
+                    if state_is_new:  # se os estado é novo puxamos as transições dos estados que o formaram
+                        for s in state_list:
+                            for sy in list(self.afd[s]):
+                                current_states = self.afd[self.related_states[new_state]][sy]
+                                extra_states = self.afd[s][sy]
+                                new_states = list(set(current_states + extra_states))
+                                self.afd[self.related_states[new_state]][sy] = new_states
 
-                    self.afd[state][symbol] = [self.related_states[new_state]]
+                    for st in list(self.afd):  # atualizamos os outros lugares onde o mesmo conjunto de estados aparece
+                        for sy in list(self.afd[st]):
+                            test_states = self.afd[st][sy]
+                            test_states.sort()
+                            if state_list == test_states:
+                                self.afd[st][sy] = [self.related_states[new_state]]
 
         return changed
 
