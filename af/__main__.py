@@ -15,8 +15,8 @@ def main():
     af.print_afnd()  # imprime o AFND livre de épsilon transições
     af.afnd_determinization()  # determiniza o afnd
     af.print_afd()  # imprime o AFD
-    af.remove_unreachable()  # remove os estados inatingíveis
     af.remove_dead()  # remove os estados mortos
+    af.remove_unreachable()  # remove os estados inatingíveis
     af.print_afd()  # imprime o AFD finalizado
     af.export_csv(csv_path)
     print('\n\nAlfabeto da linguagem: {}\n\n'.format(af.alphabet))

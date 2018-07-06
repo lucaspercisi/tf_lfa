@@ -165,7 +165,7 @@ class Constructor(object):
         self.afnd[origin_state][symbol].append(dest_state)
         self.afnd[origin_state][symbol] = list(set(self.afnd[origin_state][symbol]))
 
-    def add_afd_step(self, origin_state, dest_state, symbol, origin_initial, origin_final, dest_initial, dest_final):
+    def add_afd_step(self, origin_state, dest_state, symbol, origin_initial, origin_final, dest_initial, dest_final, replace=False):
         """
         Adiciona um passo no autômato determinístico
         :param origin_state: int: estado de origem
@@ -175,11 +175,15 @@ class Constructor(object):
         :param origin_final: bool: estado de origem é final?
         :param dest_initial: bool: estado de destino é inicial?
         :param dest_final: bool: estado de destino é final?
+        :param replace: bool: se setado sbrescreve os estados pelo novo destino em vez de apenas colocá-lo junto aos existentes
         """
         self.afd_line(origin_state, origin_initial, origin_final, [symbol])
         self.afd_line(dest_state, dest_initial, dest_final)
 
-        self.afd[origin_state][symbol].append(dest_state)
+        if replace:
+            self.afd[origin_state][symbol] = [dest_state]
+        else:
+            self.afd[origin_state][symbol].append(dest_state)
         self.afd[origin_state][symbol] = list(set(self.afd[origin_state][symbol]))
 
     def productions_to_dict(self, productions=''):
@@ -218,20 +222,23 @@ class Constructor(object):
 
         return new_data, final
 
-    def _get_reachable(self, current_state, stop=False):
+    def _get_reachable(self, current_state):
         """
-        Função recursiva que obtém os estados atingíveis
+        Função recursiva que obtém os estados atingíveis.
+        Vai à partir do estado inicial e coleta todos os estados atingíveis à partir dele
+        depois faz o mesmo para cada um que foi coletado até testar todos os estados que aparecem
         :param current_state: int: estado atual
-        :param stop: bool: flag para parar a recursão, é passado se o estado atual é um estado de erro, então pára
         """
         if current_state not in self.reachable:
             self.reachable.append(current_state)
-        if stop is False:
+
+        if current_state in self.test_alive:
+            self.test_alive.remove(current_state)
             values = list(set(self.afd[current_state].values()))
             if current_state in values:
                 values.remove(current_state)
             for state in values:
-                self._get_reachable(state, self.afd[state].error)
+                self._get_reachable(state)
 
     def get_reachable(self, state):
         """
@@ -240,6 +247,7 @@ class Constructor(object):
         :param state: int: estado inicial
         :return: list: lista com os números dos estados atingívis
         """
+        self.test_alive = list(self.afd)
         self._get_reachable(state)
         return self.reachable
 
@@ -250,25 +258,25 @@ class Constructor(object):
         keep = self.get_reachable(self.initial_state)
         unreachable = list(set(self.afd.keys()).difference(keep))
 
-        print('\n\nRemovendo estados inalcançáveis {}\n'.format(unreachable))
+        print('\nRemovendo estados inalcançáveis {}\n'.format(unreachable))
 
         for state in unreachable:
             del self.afd[state]
 
-    def _get_alive(self, path=[], reachable_states=[]):
+    def _get_alive(self, path=[], living_states=[]):
         """
         Chamada recursiva para obter os estados vivos do AFD, considera vivos todos os estados de um caminho que
-        chega à um estado final
+        chega à um estado final. Faz uma busca em profundidade para obtê-los.
         :param path: list: sequência de estados que representa um caminho dentro do AFD
-        :param reachable_states: list: estados atingíveis pelo último estado do caminho
+        :param living_states: list: próximos estados dos caminho, se chegar a um final eles estão vivos
         """
-        for reach in reachable_states:
-            if self.afd[reach].final and not is_sublist(path, self.alive):
+        for live in living_states:
+            if self.afd[live].final and not is_sublist(path, self.alive):
                 self.alive += path
         if self.test_alive:
             self.test_alive = set(self.test_alive) - set(path)
-            reachable_states = set(reachable_states) - set(path)
-            for state in reachable_states:
+            living_states = set(living_states) - set(path)
+            for state in living_states:
                 path.append(state)
                 self._get_alive(path, list(set(self.afd[state].values())))
 
@@ -288,7 +296,7 @@ class Constructor(object):
         keep = self.get_alive(self.initial_state)
         dead = list(set(self.afd.keys()).difference(keep))
 
-        print('\nRemovendo estados mortos {}\n\n'.format(dead))
+        print('\nRemovendo estados mortos {}\n'.format(dead))
 
         for state in dead:
             del self.afd[state]
@@ -434,38 +442,21 @@ class Constructor(object):
         if not self.afd:
             self.afd = copy.deepcopy(self.afnd)  # cria uma cópia do AFND para o AFD que vamos mexer
 
-        # # trecho para testes
-        # changed = 0
-        # while changed < 2:
-        #     self._afnd_determinization()
-        #     changed += 1
+        afd_states = list(self.afd)
+        index = 0
 
-        changed = self._afnd_determinization()  # determiniza o afnd
-        while changed:  # continua a determinização enquanto houver alterações no autômato
-            changed = self._afnd_determinization()
-
-        self.clean_afd()  # limpa o AFD e adiciona o estado de erro
-
-    def _afnd_determinization(self):
-        """
-        Determiniza o AFND
-        """
-        changed = False
-
-        for state in list(self.afd):
-            for symbol in list(self.afd[state]):
+        # vamos fazer a determinização "empurrando" os novos indeterminismos para baixo
+        while index < len(afd_states):
+            state = afd_states[index]
+            for symbol in self.alphabet:
                 state_list = self.afd[state][symbol]
 
                 if len(state_list) not in (0, 1):  # existe indeterminismo
-                    changed = True
-
                     new_state = state_list
                     new_state.sort()
                     new_state = str(new_state)
 
                     dest_final = False
-
-                    state_is_new = False
 
                     # se um dos estados for final o novo também será
                     for s in state_list:
@@ -473,35 +464,42 @@ class Constructor(object):
                             dest_final = True
                             break
 
+                    # relaciona o conjunto de estados do indeterminismo com um novo estado determinizado
+                    # então cria a linha correspondente à essse novo estado
                     if new_state not in self.related_states:
+                        self.afd_line(self.state+1, False, dest_final)
                         self.related_states[new_state] = self.state+1
+                        afd_states.append(self.state+1)
                         self.state += 1
-                        state_is_new = True
 
+                    for s in state_list:  # puxamos as transições dos estados que o formaram
+                        for sy in self.alphabet:
+                            current_states = self.afd[self.related_states[new_state]][sy]
+                            extra_states = self.afd[s][sy]
+                            new_states = list(set(current_states+extra_states))
+                            self.afd[self.related_states[new_state]][sy] = new_states
+
+            index += 1
+
+        # percorremos novamente o autômato, dessa vez substituindo os indeterminismos nas produções pelos novos estados
+        for state, line in self.afd.items():
+            for symbol, states in line.items():
+                str_state = str(states)
+
+                if str_state in self.related_states:
+                    new_state = self.related_states[str_state]
                     self.add_afd_step(origin_state=state,
-                                      dest_state=self.related_states[new_state],
+                                      dest_state=new_state,
                                       symbol=symbol,
-                                      origin_initial=self.afd[state].initial,
-                                      origin_final=self.afd[state].final,
+                                      origin_initial=line.initial,
+                                      origin_final=line.final,
                                       dest_initial=False,
-                                      dest_final=dest_final)
+                                      dest_final=False,
+                                      replace=True)
 
-                    if state_is_new:  # se os estado é novo puxamos as transições dos estados que o formaram
-                        for s in state_list:
-                            for sy in list(self.afd[s]):
-                                current_states = self.afd[self.related_states[new_state]][sy]
-                                extra_states = self.afd[s][sy]
-                                new_states = list(set(current_states + extra_states))
-                                self.afd[self.related_states[new_state]][sy] = new_states
-
-                    for st in list(self.afd):  # atualizamos os outros lugares onde o mesmo conjunto de estados aparece
-                        for sy in list(self.afd[st]):
-                            test_states = self.afd[st][sy]
-                            test_states.sort()
-                            if state_list == test_states:
-                                self.afd[st][sy] = [self.related_states[new_state]]
-
-        return changed
+        # limpamos o AFD, removendo listas e deixando apenas o estado no valor das chaves
+        # aqui também adicionamos um estado de erro e colocamos em tudo o que não é mapeado
+        self.clean_afd()
 
     def export_csv(self, path_to_file):
         """
