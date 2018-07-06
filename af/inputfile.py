@@ -339,6 +339,12 @@ class Constructor(object):
                         if symbol != EPSILON:
                             self.afnd[main_state][symbol] = list(set(self.afnd[main_state][symbol]+self.afnd[state][symbol]))
 
+                    for st, line in self.afd.items():  # as transições do estado de épsilon também irão ao principal
+                        for sy, sts in line.items():
+                            if sy != EPSILON:
+                                if main_state in sts and state not in sts:
+                                    self.afd[st][sy].append(state)
+                        
                     if self.afnd[state].final:  # se o estado é final, o estado principal também será
                         self.afnd[main_state].final = True
 
