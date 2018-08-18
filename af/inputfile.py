@@ -3,7 +3,6 @@ import copy
 
 EPSILON = '&'
 
-
 def is_sublist(sublist, list):
     return set(sublist) <= set(list)
 
@@ -547,3 +546,13 @@ class Constructor(object):
         message = 'Inicial = {} | Final = {} | Erro = {}'.format(afd_data.initial, afd_data.final, afd_data.error)
 
         return recognized, state, message
+
+    def symbol_recognition(self, state=0, symbol=''):
+
+        if not symbol:
+            return -1
+
+        a = self.afd[state][symbol]
+
+        return self.afd[state][symbol]
+

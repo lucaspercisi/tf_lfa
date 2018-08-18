@@ -1,0 +1,5 @@
+mentre(a < e):
+    se(i > o):
+        stampare(a)
+    altro:
+        (0)
