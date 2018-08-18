@@ -22,7 +22,9 @@ class SymbolTable(object):
         for line in range(len(self.sourceCode)):
             self.st[line] = []
             for symbol in self.sourceCode[line]:
-                #Todo: Finalizar laço principal
+                pass
+
+# TODO: Finalizar laço principal
                 # if symbol not in self.separators:
                 #     state = (af.symbol_recognition(state, symbol))
                 # else:
