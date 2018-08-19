@@ -20,13 +20,13 @@ def main():
     # af.print_afd()  # imprime o AFD
     af.remove_dead()  # remove os estados mortos
     af.remove_unreachable()  # remove os estados inatingíveis
-    # af.print_afd()  # imprime o AFD finalizado
+    af.print_afd()  # imprime o AFD finalizado
     # af.export_csv(csv_path)
 
     ts = SymbolTable()
     ts.build_symbol_table(af)
     ts.show_symbol_table()
-    # print(ts.sourceCode)
+    print(ts.sourceCode)
 
 #TODO Criar módulos perfumaria
 '''

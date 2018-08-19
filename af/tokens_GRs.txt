@@ -1,7 +1,7 @@
-mentre
-se
-altro
-stampare
+while
+if
+else
+print
 <
 >
 :

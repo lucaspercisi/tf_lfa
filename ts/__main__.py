@@ -2,46 +2,91 @@ import os
 
 class SymbolTable(object):
 
-    def __init__(self):
-        path = os.path.abspath(__file__)
-        dir_path = os.path.dirname(path)
+    def __init__(self):  # Não sei
+        path = os.path.abspath(__file__)  # Não sei
+        dir_path = os.path.dirname(path)  # Não sei
 
-        self.source_code_path = os.path.join(dir_path, 'codigo-fonte.txt')
-        self.st = dict()  # tabela de simbolos
-        self.separators = list()  # separadores da linguagem
-        # self.sy_separators = list()  # separadores da linguagem que tambem são simbolos
-        # self.sy_ignored = list()
-        self.sourceCode = list(open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
+        self.source_code_path = os.path.join(dir_path, 'codigo-fonte.txt')  # Local do código-fonte
+        self.st = dict()  # Tabela de simbolos
+        self.separators = list()  # Separadores da linguagem
+        self.sourceCode = list(
+            open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
 
-        self.build_separators()
-        self.clean_source_code()
+        self.build_separators()  # Constroí as listas contendo os separadores da linguagem.
+        self.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
 
+    '''
+    Função build_symbol_table irá fazer a busca no autômato finito
+    caracter a caracter, reconhecendo os tokesn do código fonte e verificando
+    se o token é separador ou não.
+    
+    Para cada token reconhecido é adicionado ao dicinário self.st. (Symbol Table)
+    
+    Cada chave do self.st é equivalente a cada linha do código fonte. 
+    Cada valor do self.st contém listas do tokens reconhecidos.
+    
+    O formato da self.ts: {linha : [[estado_reconhecedor, rótulo], ..., [estado_reconhecedor, rótulo]]}
+    
+    São removidos todos os espaços em branco e quebras de linha do código fonte antes de iniciar a construção da tabela de símbolos.
+    '''
     def build_symbol_table(self, af):
-        state = 0
+
+        state = 0  # Estado corrente para reconhecimento do token no AF.
+        temp_token = str()  # Variável para salvar rótulo do token.
 
         for line in range(len(self.sourceCode)):
-            self.st[line] = []
-            for symbol in self.sourceCode[line]:
-                pass
 
-# TODO: Finalizar laço principal
-                # if symbol not in self.separators:
-                #     state = (af.symbol_recognition(state, symbol))
-                # else:
-                #     af.afd[state][symbol].
-                #     self.st[line].append([state])
-                #     state = 0
+            self.st[line] = list()  # Para cada linha do código fonte, uma nova lista no self.st.
 
+            for i, symbol in enumerate(self.sourceCode[line]):
 
-    def show_symbol_table(self):
-        for line in self.st:
-            print(self.st[line])
+                temp_token = temp_token + symbol  # Guarda simbolo para criar o rótulo.
+
+                if symbol not in self.separators:
+
+                    state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
+
+                    # TODO: Arrumar o retorno da variável .final do AF
+                    if self.sourceCode[line][i + 1] in self.separators:  # and state_is_final:
+                        self.st[line].append([state, temp_token])  # Adiciona token reconhecido na tabela de símbolos
+                        state = 0  # Reinicia o estado de busca.
+                        temp_token = ''  # Limpa váriavel para guardar o rótulo.
+                    # else:
+                    #     print("Erro: Linha {}, Estado final: {}, Estado: {}".format((line, state_is_final, state)))
+
+                elif symbol in self.separators:
+
+                    state, state_is_final = (af.symbol_recognition(state, symbol))
+
+                    try:
+                        # TODO: Arrumar o retorno da variável .final do AF
+                        # Reconhece separadores de token único
+                        if self.sourceCode[line][i + 1] not in self.separators:  # and state_is_final:
+                            self.st[line].append([state, temp_token])
+                            state = 0  # Reinicia o estado de busca.
+                            temp_token = ''  # Limpa váriavel para guardar o rótulo.
+
+                        # TODO: Reconhecer separadores juntos que são de tokens iguais.
+                        elif self.sourceCode[line][i + 1] in self.separators and state_is_final:
+                            pass
+
+                        # TODO: Reconhecer separadores juntos que são de tokens diferentes.
+                        else:
+                            pass
+
+                    except IndexError:
+                        pass
+                        # print('Acabou a lista!')
 
     def build_separators(self):
         self.separators = ['(', ')', ':', '<', '>']
-        # self.separators = [' ']
 
     def clean_source_code(self):
         for line in range(len(self.sourceCode)):
             self.sourceCode[line] = self.sourceCode[line].replace(' ', '')
             self.sourceCode[line] = self.sourceCode[line].replace('\n', '')
+
+    def show_symbol_table(self):
+        for line in self.st:
+            print(self.st[line])
+
