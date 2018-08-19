@@ -23,12 +23,12 @@ def main():
     af.print_afd()  # imprime o AFD finalizado
     # af.export_csv(csv_path)
 
-    ts = SymbolTable()
-    ts.build_symbol_table(af)
-    ts.show_symbol_table()
+    #  TABELA DE SÍMBOLOS
+    ts = SymbolTable()  # Instância da Tabela de Símbolos
+    ts.build_symbol_table(af)  # Constrói a Tabela de Símbolos de acordo com o AF
+    ts.show_symbol_table()  # Mostra Tabela de Símbolos
     print(ts.sourceCode)
 
-#TODO Criar módulos perfumaria
 '''
     print('\n\nAlfabeto da linguagem: {}\n\n'.format(af.alphabet))
 
@@ -42,4 +42,5 @@ def main():
 
     print('Saindo...')
 '''
+
 main()
