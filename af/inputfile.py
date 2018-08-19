@@ -550,6 +550,6 @@ class Constructor(object):
     def symbol_recognition(self, state=0, symbol=''):
 
         line = self.afd[state]
-        #TODO: (Bruno) Por que as vezes o line.final retorna o valor errado?
+        # TODO: (Bruno) Por que as vezes o line.final retorna o valor errado?
         return line.get(symbol), line.final
 

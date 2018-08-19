@@ -9,6 +9,7 @@ class SymbolTable(object):
         self.source_code_path = os.path.join(dir_path, 'codigo-fonte.txt')  # Local do código-fonte
         self.st = dict()  # Tabela de simbolos
         self.separators = list()  # Separadores da linguagem
+        self.double_separators = list()  # Separadores da linguagem
         self.sourceCode = list(
             open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
 
@@ -43,42 +44,43 @@ class SymbolTable(object):
                 try:
                     temp_token = temp_token + symbol  # Guarda simbolo para criar o rótulo.
 
-                    if symbol not in self.separators:
+                    if symbol not in self.separators and symbol + self.sourceCode[line][i + 1] not in self.double_separators:
 
                         state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
-                        # TODO: Arrumar o retorno da variável .final do AF
-                        if self.sourceCode[line][i + 1] in self.separators:  # and state_is_final:
+                        # TODO: Arrumar o retorno da variável .final do AF para garantir testes, ou não.
+
+                        if self.sourceCode[line][i + 1] in self.separators or self.sourceCode[line][i + 1]+self.sourceCode[line][i + 2] in self.double_separators:  # and state_is_final:
                             self.st[line].append([state, temp_token])  # Adiciona token reconhecido na tabela de símbolos
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
-                        # else:
-                        #     print("Erro: Linha {}, Estado final: {}, Estado: {}".format((line, state_is_final, state)))
 
                     elif symbol in self.separators:
 
                         state, state_is_final = (af.symbol_recognition(state, symbol))
 
-                        # TODO: Arrumar o retorno da variável .final do AF para condicial correta
-                        # Reconhece separadores de símbolo único (ex: ':' )
-                        if self.sourceCode[line][i + 1] not in self.separators:  # and state_is_final:
+                        # Reconhece separadores duplos (ex: '==' )
+                        if symbol + self.sourceCode[line][i + 1] in self.double_separators:  # and self.sourceCode[line][i + 1] == symbol:
+                            pass
+
+                        # Reconhece separadores simples (ex: ':' )
+                        elif symbol + self.sourceCode[line][i + 1] not in self.separators:  # and state_is_final:
+
+                            # Impede lista de espaços na tabela de símbolos
+                            if symbol is ' ':
+                                state = 0  # Reinicia o estado de busca.
+                                temp_token = ''  # Limpa váriavel para guardar o rótulo.
+                            else:
+                                self.st[line].append([state, temp_token])
+                                state = 0  # Reinicia o estado de busca.
+                                temp_token = ''  # Limpa váriavel para guardar o rótulo.
+
+                        # Reconhece separadores simples que estão juntos (ex: '):' )
+                        elif symbol + self.sourceCode[line][i + 1] in self.separators and self.sourceCode[line][
+                            i + 1] != symbol:
                             self.st[line].append([state, temp_token])
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
-
-                        # TODO: Reconhecer separadores juntos de símbolo e token diferentes (ex: '):' )
-                        elif self.sourceCode[line][i + 1] in self.separators and self.sourceCode[line][i + 1] != symbol:
-                            self.st[line].append([state, temp_token])
-                            state = 0  # Reinicia o estado de busca.
-                            temp_token = ''  # Limpa váriavel para guardar o rótulo.
-
-                        # TODO: Reconhecer separadores juntos de mesmo token e simbolos iguais (ex: '==' )
-                        elif self.sourceCode[line][i + 1] in self.separators and self.sourceCode[line][i + 1] == symbol:
-                            pass
-
-                        # TODO: Reconhecer separadores juntos de mesmo token e simbolos diferentes (ex: '!=' )
-                        else:
-                            pass
 
                 except IndexError:  # Último simbolo de cada linha
                     self.st[line].append([state, temp_token])
@@ -86,12 +88,16 @@ class SymbolTable(object):
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
     def build_separators(self):
-        self.separators = ['(', ')', ':', '<', '>']
+        self.separators = ['(', ')', ':', '<', '>', '=', ' ']
+        self.double_separators = ['<=', '>=', '==', '!=']
 
     def clean_source_code(self):
         for line in range(len(self.sourceCode)):
-            self.sourceCode[line] = self.sourceCode[line].replace(' ', '')
             self.sourceCode[line] = self.sourceCode[line].replace('\n', '')
+
+        # Não sei o por quê, mas precisou. Na quebra de linha co código fonte, adicionou uma lista.
+        while '' in self.sourceCode:
+            self.sourceCode.remove('')
 
     def show_symbol_table(self):
         for line in self.st:

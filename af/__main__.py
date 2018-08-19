@@ -26,9 +26,9 @@ def main():
     #  TABELA DE SÍMBOLOS
     ts = SymbolTable()  # Instância da Tabela de Símbolos
     ts.build_symbol_table(af)  # Constrói a Tabela de Símbolos de acordo com o AF
-    print()
     ts.show_symbol_table()  # Mostra Tabela de Símbolos
-    print('\n', ts.sourceCode, '\n')
+
+    # TODO: Definir linguagem. Sugestão: Python em Italiano (exemplo no arquivo 'código-fonte.txt).
 
 '''
     print('\n\nAlfabeto da linguagem: {}\n\n'.format(af.alphabet))

@@ -1,5 +1,18 @@
-mentre(a < e):
+para a dentro aeiou:
+    stampare(a)
+
+mentre( a< e) :
     se(i > o):
         stampare(a)
-    altro:
+    altrise:
         stampare(o)
+    altrise:
+        a = e
+    altrise:
+        a != e
+    altrise:
+        a >= e
+    altrise:
+        a <= e
+    altrise:
+        a == e
