@@ -26,8 +26,9 @@ def main():
     #  TABELA DE SÍMBOLOS
     ts = SymbolTable()  # Instância da Tabela de Símbolos
     ts.build_symbol_table(af)  # Constrói a Tabela de Símbolos de acordo com o AF
+    print()
     ts.show_symbol_table()  # Mostra Tabela de Símbolos
-    print(ts.sourceCode)
+    print('\n', ts.sourceCode, '\n')
 
 '''
     print('\n\nAlfabeto da linguagem: {}\n\n'.format(af.alphabet))

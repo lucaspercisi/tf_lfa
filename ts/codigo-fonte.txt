@@ -1,5 +1,5 @@
-while(a < e):
-    if(i > o):
-        print(a)
-    else:
-        print(0)
+mentre(a < e):
+    se(i > o):
+        stampare(a)
+    altro:
+        stampare(o)
