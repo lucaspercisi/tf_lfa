@@ -1,3 +1,6 @@
+==
+
+
 para a dentro aeiou:
     stampare(a)
 
@@ -7,12 +10,12 @@ mentre( a< e) :
     altrise:
         stampare(o)
     altrise:
-        a = e
+        a = 0.1563
     altrise:
-        a != e
+        a != -1.6589
     altrise:
-        a >= e
+        a >= -.9879456
     altrise:
-        a <= e
-    altrise:
-        a == e
+        a <= 1321056
+    altro:
+        a == 10.86532

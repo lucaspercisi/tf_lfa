@@ -43,21 +43,21 @@ class SymbolTable(object):
 
                 try:
                     temp_token = temp_token + symbol  # Guarda simbolo para criar o rótulo.
+                    state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
                     if symbol not in self.separators and symbol + self.sourceCode[line][i + 1] not in self.double_separators:
 
-                        state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
-
                         # TODO: Arrumar o retorno da variável .final do AF para garantir testes, ou não.
 
-                        if self.sourceCode[line][i + 1] in self.separators or self.sourceCode[line][i + 1]+self.sourceCode[line][i + 2] in self.double_separators:  # and state_is_final:
-                            self.st[line].append([state, temp_token])  # Adiciona token reconhecido na tabela de símbolos
-                            state = 0  # Reinicia o estado de busca.
-                            temp_token = ''  # Limpa váriavel para guardar o rótulo.
+                        try:
+                            if self.sourceCode[line][i + 1] in self.separators or self.sourceCode[line][i + 1]+self.sourceCode[line][i + 2] in self.double_separators:  # and state_is_final:
+                                self.st[line].append([state, temp_token])  # Adiciona token reconhecido na tabela de símbolos
+                                state = 0  # Reinicia o estado de busca.
+                                temp_token = ''  # Limpa váriavel para guardar o rótulo.
+                        except IndexError:
+                            state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
                     elif symbol in self.separators:
-
-                        state, state_is_final = (af.symbol_recognition(state, symbol))
 
                         # Reconhece separadores duplos (ex: '==' )
                         if symbol + self.sourceCode[line][i + 1] in self.double_separators:  # and self.sourceCode[line][i + 1] == symbol:
