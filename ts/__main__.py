@@ -8,7 +8,7 @@ class SymbolTable(object):
         dir_path = os.path.dirname(path)  # Não sei
 
         self.source_code_path = os.path.join(dir_path, 'codigo-fonte.txt')  # Local do código-fonte
-        self.st = dict()  # Tabela de simbolos
+        self.st = dict()  # Tabela de Símbolos
         self.separators = list()  # Separadores da linguagem
         self.double_separators = list()  # Separadores da linguagem
         self.sourceCode = list(open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
@@ -28,7 +28,7 @@ class SymbolTable(object):
     
     O formato da self.ts: {linha : [[estado_reconhecedor, rótulo], ..., [estado_reconhecedor, rótulo]]}
     
-    São removidos todos os espaços em branco e quebras de linha do código fonte antes de iniciar a construção da tabela de símbolos.
+    São removidos os '\n' do código fonte antes de iniciar a construção da tabela de símbolos.
     '''
 
     def build_symbol_table(self, af):
@@ -47,7 +47,8 @@ class SymbolTable(object):
                     state, is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
                     if symbol not in self.separators \
-                            and symbol + self.sourceCode[line][i + 1] not in self.double_separators \
+                            and symbol + self.sourceCode[line][i + 1] \
+                            not in self.double_separators \
                             and is_final:
 
                         try:
