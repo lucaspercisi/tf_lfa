@@ -44,11 +44,11 @@ class SymbolTable(object):
 
                 try:
                     temp_token = temp_token + symbol  # Guarda simbolo para criar o rótulo.
-                    state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
+                    state, is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
                     if symbol not in self.separators \
                             and symbol + self.sourceCode[line][i + 1] not in self.double_separators \
-                            and state_is_final:
+                            and is_final:
 
                         try:
                             if self.sourceCode[line][i + 1] in self.separators \
@@ -60,9 +60,9 @@ class SymbolTable(object):
                                 temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                         except IndexError:  # Exceção para números sem símbolo separador no final.
-                            state, state_is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
+                            state, is_final = (af.symbol_recognition(state, symbol))  # Busca tokens no AF
 
-                    elif symbol in self.separators and state_is_final:
+                    elif symbol in self.separators and is_final:
 
                         # Reconhece separadores duplos (ex: '==' )
                         if symbol + self.sourceCode[line][i + 1] in self.double_separators:  # and self.sourceCode[line][i + 1] == symbol:
@@ -71,15 +71,9 @@ class SymbolTable(object):
                         # Reconhece separadores simples (ex: ':' )
                         elif symbol + self.sourceCode[line][i + 1] not in self.separators:
 
-                            # Impede inserção de espaços na tabela de símbolos.
-                            if symbol is ' ':
-                                state = 0  # Reinicia o estado de busca.
-                                temp_token = ''  # Limpa váriavel para guardar o rótulo.
-
-                            else:
-                                self.st[line].append([state, temp_token])
-                                state = 0  # Reinicia o estado de busca.
-                                temp_token = ''  # Limpa váriavel para guardar o rótulo.
+                            self.st[line].append([state, temp_token])
+                            state = 0  # Reinicia o estado de busca.
+                            temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                         # Reconhece separadores simples que estão juntos (ex: '):' )
                         elif symbol + self.sourceCode[line][i + 1] in self.separators and self.sourceCode[line][i + 1] != symbol:

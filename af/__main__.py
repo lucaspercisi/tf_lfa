@@ -9,6 +9,8 @@ def main():
     file_path = os.path.join(dir_path, 'tokens_GRs.txt')
     csv_path = os.path.join(dir_path, 'AFD_output.csv')
 
+    # AUTÔMATO FINITO
+    # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente.
     af = Constructor(file_path)
     af.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
     # af.print_afnd()  # imprime o AFND carregado
