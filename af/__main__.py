@@ -9,8 +9,6 @@ def main():
     file_path = os.path.join(dir_path, 'tokens_GRs.txt')
     csv_path = os.path.join(dir_path, 'AFD_output.csv')
 
-
-
     af = Constructor(file_path)
     af.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
     # af.print_afnd()  # imprime o AFND carregado
@@ -30,7 +28,8 @@ def main():
 
     # TODO: Definir linguagem. Sugestão: Python em Italiano (exemplo no arquivo 'código-fonte.txt).
 
-'''
+
+
     print('\n\nAlfabeto da linguagem: {}\n\n'.format(af.alphabet))
 
     contin = 'S'
@@ -42,6 +41,6 @@ def main():
         contin = str(input('Deseja continuar? S/N: ')).upper()
 
     print('Saindo...')
-'''
+
 
 main()
