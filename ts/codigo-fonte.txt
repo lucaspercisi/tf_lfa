@@ -9,13 +9,12 @@ mentre( a< e) :
     altrise:
         a =  "oi "
     altrise:
-        a != -1.6589
+        a != -189
     altrise:
         a >= -.9879456
     altrise:
         a <= 1321056
     altrise:
-        a === 10.86532
+        a === 102
     altro:
         a = 15
-1.1

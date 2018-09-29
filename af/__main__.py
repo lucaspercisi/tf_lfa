@@ -10,7 +10,7 @@ def main():
     csv_path = os.path.join(dir_path, 'AFD_output.csv')
 
     # AUTÔMATO FINITO
-    # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente.
+    # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente do ponto.
     af = Constructor(file_path)
     af.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
     # af.print_afnd()  # imprime o AFND carregado
