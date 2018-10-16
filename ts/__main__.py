@@ -8,10 +8,13 @@ class SymbolTable(object):
         dir_path = os.path.dirname(path)  # Não sei
 
         self.source_code_path = os.path.join(dir_path, 'codigo-fonte.txt')  # Local do código-fonte
+        self.gold_lalr_path = os.path.join(dir_path, 'C-ANSI.txt')  # Local do código-fonte
+
         self.st = dict()  # Tabela de Símbolos
         self.separators = list()  # Separadores da linguagem
         self.double_separators = list()  # Separadores da linguagem
         self.sourceCode = list(open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
+        self.gold_lalr = list(open(self.gold_lalr_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
 
         self.build_separators()  # Constroí as listas contendo os separadores da linguagem.
         self.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
@@ -107,3 +110,12 @@ class SymbolTable(object):
     def show_symbol_table(self):
         for line in self.st:
             print(self.st[line])
+
+    def gold_to_ts_translator(self):
+
+        for l, line in enumerate(self.gold_lalr):
+            if "LALR" not in line:
+                continue
+            while "State 1" not in self.gold_lalr[l]:
+                if "        <" in self.gold_lalr[l]:
+                    pass

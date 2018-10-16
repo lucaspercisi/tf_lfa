@@ -9,7 +9,7 @@ def main():
     file_path = os.path.join(dir_path, 'tokens_GRs.txt')
     csv_path = os.path.join(dir_path, 'AFD_output.csv')
 
-    # AUTÔMATO FINITO
+    # AUTÔM ATO FINITO
     # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente do ponto.
     af = Constructor(file_path)
     af.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
@@ -26,6 +26,7 @@ def main():
     #  TABELA DE SÍMBOLOS
     ts = SymbolTable()  # Instância da Tabela de Símbolos
     ts.build_symbol_table(af)  # Constrói a Tabela de Símbolos de acordo com o AF
+    # ts.gold_to_ts_translator()
     ts.show_symbol_table()  # Mostra Tabela de Símbolos
 
 '''
