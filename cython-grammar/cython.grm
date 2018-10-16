@@ -1,0 +1,331 @@
+"Name"    = 'Cython' 
+"Version" = '2018'
+"Author"  = 'Lucas Percisi, Bruno Ribeiro, Natan Ferrandini' 
+          
+"Case Sensitive" = True
+"Start Symbol"   = <Decls>
+
+{Hex Digit}      = {Digit} + [abcdefABCDEF]
+{Oct Digit}      = [01234567]
+
+{Id Head}        = {Letter} + [_]
+{Id Tail}        = {Id Head} + {Digit}
+
+{String Ch}      = {Printable} - ["]
+{Char Ch}        = {Printable} - ['']
+
+DecLiteral       = [123456789]{digit}*
+OctLiteral       = 0{Oct Digit}*
+HexLiteral       = 0x{Hex Digit}+
+FloatLiteral     = {Digit}*'.'{Digit}+
+
+StringLiteral    = '"'( {String Ch} | '\'{Printable} )* '"'
+CharLiteral      = '' ( {Char Ch} | '\'{Printable} )''
+
+Id               = {Id Head}{Id Tail}*
+
+
+! ===================================================================
+! Comments
+! ===================================================================
+
+Comment Start = '/*'
+Comment End   = '*/'
+Comment Line  = '#'
+
+
+! Typically, C comments cannot be nested. As a result, the 
+! Comment Start and Comment End terminals cannot be used.
+!
+! To implement non-nested comments, the whitespace terminal is
+! modified to accept them. In the definition below, Whitespace 
+! is defined as one or more {Whitespace} characters OR a series
+! of characters delimited by /* and */. Note that the characters
+! between the two delimiters cannot contain the */ sequence. 
+!
+! Uncomment the following to prevent block commments. Make sure 
+! to comment the Comment Start and Comment End definitions.
+!
+! {Non Slash}     = {Printable} - [/]  
+! {Non Asterisk}  = {Printable} - [*]
+! 
+! Whitespace     = {Whitespace}+   
+!                | '/*' (  {Non Asterisk} | '*' {Non Slash}? )*  '*/'
+
+!=======================================================
+
+<Decls> ::= <Decl> <Decls>
+
+<Decl>  ::= <Var Decl> 
+          !|<Func Decl>
+          !| <Func Proto>
+          !| <Struct Decl>
+          !| <Union Decl>
+          !| <Enum Decl>
+          !| <Var Decl>    
+          !| <Typedef Decl>
+              
+! ===================================================================
+! Function  Declaration
+! ===================================================================
+
+!<Func Proto> ::= <Func ID> '(' <Types>  ')' ';'
+!               | <Func ID> '(' <Params> ')' ';'
+!               | <Func ID> '(' ')' ';'
+!
+!<Func Decl>  ::= <Func ID> '(' <Params>  ')' <Block>
+!               | <Func ID> '(' <Id List> ')' <Struct Def> <Block>
+!               | <Func ID> '(' ')' <Block>
+!
+!
+!<Params>     ::= <Param> ',' <Params>
+!               | <Param>
+!               
+!<Param>      ::= const <Type> ID
+!               |       <Type> ID
+!               
+!<Types>      ::= <Type>  ',' <Types>
+!               | <Type> 
+!   
+!<Id List>    ::= Id ',' <Id List>
+!               | Id
+!
+!<Func ID>    ::= <Type> ID
+!               | ID
+
+! ===================================================================
+! Type Declaration
+! ===================================================================
+!
+!<Typedef Decl> ::= typedef <Type> ID ';'
+!
+!<Struct Decl>  ::= struct Id '{' <Struct Def> '}'  ';' 
+!
+!<Union Decl>   ::= union Id '{' <Struct Def> '}'  ';' 
+!
+!
+!<Struct Def>   ::= <Var Decl> <Struct Def>
+!                 | <Var Decl>
+
+! ===================================================================
+! Variable Declaration
+! ===================================================================
+
+!<Var Decl>     ::= <Mod> <Type> <Var> <Var List>  ';'
+!                 |       <Type> <Var> <Var List>  ';'
+!                 | <Mod>        <Var> <Var List>  ';'
+                 
+<Var Decl>     ::= <Var> ';'
+!                 |       <Var> ';'
+!                 | <Mod> <Var> ';'
+
+             
+<Var>      ::= ID <Array>
+             | ID <Array> '=' <Op If> 
+
+<Array>    ::= '[' <Expr> ']'
+             | '[' ']'
+             |
+             
+!<Var List> ::=  ',' <Var Item> <Var List>
+!             | 
+
+!<Var Item> ::= <Pointers> <Var>
+
+             
+!<Mod>      ::= extern 
+!             | static
+!             | register
+!             | auto
+!             | volatile
+!             | const   
+
+! ===================================================================
+! Enumerations
+! ===================================================================
+!
+!<Enum Decl>    ::= enum Id '{' <Enum Def> '}'  ';'
+! 
+!<Enum Def>     ::= <Enum Val> ',' <Enum Def>
+!                 | <Enum Val>
+!
+!<Enum Val>     ::= Id
+!                 | Id '=' OctLiteral
+!                 | Id '=' HexLiteral
+!                 | Id '=' DecLiteral  
+
+
+!! ===================================================================
+!! Types
+!! ===================================================================
+!
+!<Type>     ::= <Base> <Pointers> 
+!
+!<Base>     ::= <Sign> <Scalar>
+!             | struct Id 
+!             | struct '{' <Struct Def> '}' 
+!             | union Id
+!             | union '{' <Struct Def> '}' 
+!             | enum Id  
+!
+!
+!<Sign>     ::= signed 
+!             | unsigned
+!             |
+!
+!<Scalar>   ::= char
+!             | int
+!             | short
+!             | long
+!             | short int
+!             | long int
+!             | float
+!             | double
+!             | void           
+!
+!<Pointers> ::= '*' <Pointers>
+!             |
+!
+! ===================================================================
+! Statements
+! ===================================================================
+
+<Stm>        ::= <Var Decl>
+               | Id ':'                            !Label
+               | if '(' <Expr> ')' <Stm>          
+               | if '(' <Expr> ')' <Then Stm> else <Stm>         
+               | while '(' <Expr> ')' <Stm> 
+               | for '(' <Arg> ';' <Arg> ';' <Arg> ')' <Stm>
+               | <Normal Stm>
+
+<Then Stm>   ::= if '(' <Expr> ')' <Then Stm> else <Then Stm> 
+               | while '(' <Expr> ')' <Then Stm> 
+               | for '(' <Arg> ';' <Arg> ';' <Arg> ')' <Then Stm>
+               | <Normal Stm>
+
+<Normal Stm> ::= do <Stm> while '(' <Expr> ')'
+               | switch '(' <Expr> ')' '{' <Case Stms> '}'
+               | <Block>
+               | <Expr> ';'               
+               | goto Id ';'
+               | break ';'
+               | continue ';'
+               | return <Expr> ';'
+               | ';'              !Null statement
+
+
+<Arg>       ::= <Expr> 
+!              | 
+
+<Case Stms> ::= case <Value> ':' <Stm List> <Case Stms>
+              | default ':' <Stm List>                  
+!              |
+
+<Block>     ::= '{' <Stm List> '}' 
+
+<Stm List>  ::=  <Stm> <Stm List> 
+!              | 
+
+
+! ===================================================================
+! Here begins the C's 15 levels of operator precedence.
+! ===================================================================
+
+<Expr>       ::= <Expr> ',' <Op Assign>   
+               | <Op Assign>
+
+<Op Assign>  ::= <Op If> '='   <Op Assign>
+!               | <Op If> '+='  <Op Assign>
+!               | <Op If> '-='  <Op Assign>
+!               | <Op If> '*='  <Op Assign>
+!               | <Op If> '/='  <Op Assign>
+!               | <Op If> '^='  <Op Assign>
+!               | <Op If> '&='  <Op Assign>
+!               | <Op If> '|='  <Op Assign>
+!               | <Op If> '>>=' <Op Assign>
+!               | <Op If> '<<=' <Op Assign>
+               | <Op If>
+
+!<Op If>      ::= <Op Or> '?' <Op If> ':' <Op If>
+!               | <Op Or>
+
+<Op If>      ::= <Op Or>
+
+<Op Or>      ::=  '||'
+
+<Op And>     ::=  '&&'
+         
+
+!<Op BinOR>   ::= <Op BinOr> '|' <Op BinXOR>
+!               | <Op BinXOR>
+
+!<Op BinXOR>  ::= <Op BinXOR> '^' <Op BinAND>
+!               | <Op BinAND>
+!
+!<Op BinAND>  ::= <Op BinAND> '&' <Op Equate>
+!               | <Op Equate>
+
+!<Op Equate>  ::= <Op Equate> '==' <Op Compare>
+!               | <Op Equate> '!=' <Op Compare>
+!               | <Op Compare>
+!
+!<Op Compare> ::= <Op Compare> '<'  <Op Shift>
+!               | <Op Compare> '>'  <Op Shift>
+!               | <Op Compare> '<=' <Op Shift>
+!               | <Op Compare> '>=' <Op Shift>
+!               | <Op Shift>
+
+<Op Equate>  ::= '==' 
+               | '!='
+
+<Op Compare> ::= '<'
+               | '>'
+               | '<='  
+               | '>='
+
+!<Op Shift>   ::= <Op Shift> '<<' <Op Add>
+!               | <Op Shift> '>>' <Op Add>
+!               | <Op Add>
+
+<Op Shift>   ::= <Op Add>
+
+
+<Op Add>     ::= <Op Add> '+' <Op Mult>
+               | <Op Add> '-' <Op Mult>
+               | <Op Mult>
+
+<Op Mult>    ::= <Op Mult> '*' <Op Unary>
+               | <Op Mult> '/' <Op Unary>
+               | <Op Mult> '%' <Op Unary>
+               | <Op Unary>
+
+<Op Unary>   ::= '!'    <Op Unary>
+               | '~'    <Op Unary>   
+               | '-'    <Op Unary>
+               | '*'    <Op Unary>
+               | '&'    <Op Unary>               
+               | '++'   <Op Unary>
+               | '--'   <Op Unary>
+!               | <Op Pointer> '++'
+!               | <Op Pointer> '--'
+!               | '(' <Type> ')' <Op Unary>   !CAST
+!               | sizeof '(' <Type> ')'
+!               | sizeof '(' ID <Pointers> ')'
+!               | <Op Pointer>
+
+!<Op Pointer> ::= <Op Pointer> '.' <Value>
+!               | <Op Pointer> '->' <Value>
+!               | <Op Pointer> '[' <Expr> ']'
+!               | <Value>
+
+<Value>      ::= OctLiteral
+               | HexLiteral
+               | DecLiteral  
+               | StringLiteral
+               | CharLiteral
+               | FloatLiteral
+               | Id '(' <Expr> ')'
+               | Id '(' ')'          
+
+               | Id
+               | '(' <Expr> ')'
