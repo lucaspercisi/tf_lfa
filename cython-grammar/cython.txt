@@ -177,12 +177,12 @@ LALR States
 ========================================
 
 State 0
-        <S'> ::= _ <Decls> (EOF)                         <S'> ::= ^ <Decls> (EOF)
-        <Decls> ::= _ <Decl> <Decls>                     <Decls> ::= ^ <Decl> <Decls>
-        <Decl> ::= _ <Var Decl>                          <Decl> ::= ^ <Var Decl>
-        <Var Decl> ::= _ <Var> ';'                       <Var Decl> ::= ^ <Var> ';'
-        <Var> ::= _ Id <Array>                           <Var> ::= ^ Id <Array>
-        <Var> ::= _ Id <Array> '=' <Op If>               <Var> ::= ^ Id <Array> '=' <Op If>
+        <S'> ::= _ <Decls> (EOF)
+        <Decls> ::= _ <Decl> <Decls>
+        <Decl> ::= _ <Var Decl>
+        <Var Decl> ::= _ <Var> ';'
+        <Var> ::= _ Id <Array>
+        <Var> ::= _ Id <Array> '=' <Op If>
 
         Id s 1
         <Decl> g 2
@@ -192,13 +192,11 @@ State 0
 
 
 State 1
-        Prior States: 0, 2
-
-        <Var> ::= Id _ <Array>                           <Var> ::= Id ^ <Array>
-        <Var> ::= Id _ <Array> '=' <Op If>               <Var> ::= Id ^ <Array> '=' <Op If>
-        <Array> ::= _ '[' <Expr> ']'                     <Array> ::= ^ '[' <Expr> ']'
-        <Array> ::= _ '[' ']'                            <Array> ::= ^ '[' ']'
-        <Array> ::= _                                    <Array> ::= ^
+        <Var> ::= Id _ <Array>
+        <Var> ::= Id _ <Array> '=' <Op If>
+        <Array> ::= _ '[' <Expr> ']'
+        <Array> ::= _ '[' ']'
+        <Array> ::= _
 
         '[' s 6
         <Array> g 7
@@ -207,14 +205,12 @@ State 1
 
 
 State 2
-        Prior States: 0, 2
-
-        <Decls> ::= <Decl> _ <Decls>                     <Decls> ::= <Decl> ^ <Decls>
-        <Decls> ::= _ <Decl> <Decls>                     <Decls> ::= ^ <Decl> <Decls>
-        <Decl> ::= _ <Var Decl>                          <Decl> ::= ^ <Var Decl>
-        <Var Decl> ::= _ <Var> ';'                       <Var Decl> ::= ^ <Var> ';'
-        <Var> ::= _ Id <Array>                           <Var> ::= ^ Id <Array>
-        <Var> ::= _ Id <Array> '=' <Op If>               <Var> ::= ^ Id <Array> '=' <Op If>
+        <Decls> ::= <Decl> _ <Decls>
+        <Decls> ::= _ <Decl> <Decls>
+        <Decl> ::= _ <Var Decl>
+        <Var Decl> ::= _ <Var> ';'
+        <Var> ::= _ Id <Array>
+        <Var> ::= _ Id <Array> '=' <Op If>
 
         Id s 1
         <Decl> g 2
@@ -224,40 +220,32 @@ State 2
 
 
 State 3
-        Prior States: 0
-
-        <S'> ::= <Decls> _ (EOF)                         <S'> ::= <Decls> ^ (EOF)
+        <S'> ::= <Decls> _ (EOF)
 
         (EOF) a
 
 
 State 4
-        Prior States: 0, 2
-
-        <Var Decl> ::= <Var> _ ';'                       <Var Decl> ::= <Var> ^ ';'
+        <Var Decl> ::= <Var> _ ';'
 
         ';' s 9
 
 
 State 5
-        Prior States: 0, 2
-
-        <Decl> ::= <Var Decl> _                          <Decl> ::= <Var Decl> ^
+        <Decl> ::= <Var Decl> _
 
         Id r 1
 
 
 State 6
-        Prior States: 1
-
-        <Array> ::= '[' _ <Expr> ']'                     <Array> ::= '[' ^ <Expr> ']'
-        <Array> ::= '[' _ ']'                            <Array> ::= '[' ^ ']'
-        <Expr> ::= _ <Expr> ',' <Op Assign>              <Expr> ::= ^ <Expr> ',' <Op Assign>
-        <Expr> ::= _ <Op Assign>                         <Expr> ::= ^ <Op Assign>
-        <Op Assign> ::= _ <Op If> '=' <Op Assign>        <Op Assign> ::= ^ <Op If> '=' <Op Assign>
-        <Op Assign> ::= _ <Op If>                        <Op Assign> ::= ^ <Op If>
-        <Op If> ::= _ <Op Or>                            <Op If> ::= ^ <Op Or>
-        <Op Or> ::= _ '||'                               <Op Or> ::= ^ '||'
+        <Array> ::= '[' _ <Expr> ']'
+        <Array> ::= '[' _ ']'
+        <Expr> ::= _ <Expr> ',' <Op Assign>
+        <Expr> ::= _ <Op Assign>
+        <Op Assign> ::= _ <Op If> '=' <Op Assign>
+        <Op Assign> ::= _ <Op If>
+        <Op If> ::= _ <Op Or>
+        <Op Or> ::= _ '||'
 
         ']' s 10
         '||' s 11
@@ -268,44 +256,34 @@ State 6
 
 
 State 7
-        Prior States: 1
-
-        <Var> ::= Id <Array> _                           <Var> ::= Id <Array> ^
-        <Var> ::= Id <Array> _ '=' <Op If>               <Var> ::= Id <Array> ^ '=' <Op If>
+        <Var> ::= Id <Array> _
+        <Var> ::= Id <Array> _ '=' <Op If>
 
         '=' s 16
         ';' r 3
 
 
 State 8
-        Prior States: 2
-
-        <Decls> ::= <Decl> <Decls> _                     <Decls> ::= <Decl> <Decls> ^
+        <Decls> ::= <Decl> <Decls> _
 
         (EOF) r 0
 
 
 State 9
-        Prior States: 4
-
-        <Var Decl> ::= <Var> ';' _                       <Var Decl> ::= <Var> ';' ^
+        <Var Decl> ::= <Var> ';' _
 
         Id r 2
 
 
 State 10
-        Prior States: 6
-
-        <Array> ::= '[' ']' _                            <Array> ::= '[' ']' ^
+        <Array> ::= '[' ']' _
 
         ';' r 6
         '=' r 6
 
 
 State 11
-        Prior States: 6, 16, 17, 19
-
-        <Op Or> ::= '||' _                               <Op Or> ::= '||' ^
+        <Op Or> ::= '||' _
 
         ',' r 38
         ';' r 38
@@ -314,29 +292,23 @@ State 11
 
 
 State 12
-        Prior States: 6
-
-        <Array> ::= '[' <Expr> _ ']'                     <Array> ::= '[' <Expr> ^ ']'
-        <Expr> ::= <Expr> _ ',' <Op Assign>              <Expr> ::= <Expr> ^ ',' <Op Assign>
+        <Array> ::= '[' <Expr> _ ']'
+        <Expr> ::= <Expr> _ ',' <Op Assign>
 
         ',' s 17
         ']' s 18
 
 
 State 13
-        Prior States: 6
-
-        <Expr> ::= <Op Assign> _                         <Expr> ::= <Op Assign> ^
+        <Expr> ::= <Op Assign> _
 
         ',' r 34
         ']' r 34
 
 
 State 14
-        Prior States: 6, 17, 19
-
-        <Op Assign> ::= <Op If> _ '=' <Op Assign>        <Op Assign> ::= <Op If> ^ '=' <Op Assign>
-        <Op Assign> ::= <Op If> _                        <Op Assign> ::= <Op If> ^
+        <Op Assign> ::= <Op If> _ '=' <Op Assign>
+        <Op Assign> ::= <Op If> _
 
         '=' s 19
         ',' r 36
@@ -344,9 +316,7 @@ State 14
 
 
 State 15
-        Prior States: 6, 16, 17, 19
-
-        <Op If> ::= <Op Or> _                            <Op If> ::= <Op Or> ^
+        <Op If> ::= <Op Or> _
 
         ',' r 37
         ';' r 37
@@ -355,11 +325,9 @@ State 15
 
 
 State 16
-        Prior States: 7
-
-        <Var> ::= Id <Array> '=' _ <Op If>               <Var> ::= Id <Array> '=' ^ <Op If>
-        <Op If> ::= _ <Op Or>                            <Op If> ::= ^ <Op Or>
-        <Op Or> ::= _ '||'                               <Op Or> ::= ^ '||'
+        <Var> ::= Id <Array> '=' _ <Op If>
+        <Op If> ::= _ <Op Or>
+        <Op Or> ::= _ '||'
 
         '||' s 11
         <Op If> g 20
@@ -367,13 +335,11 @@ State 16
 
 
 State 17
-        Prior States: 12
-
-        <Expr> ::= <Expr> ',' _ <Op Assign>              <Expr> ::= <Expr> ',' ^ <Op Assign>
-        <Op Assign> ::= _ <Op If> '=' <Op Assign>        <Op Assign> ::= ^ <Op If> '=' <Op Assign>
-        <Op Assign> ::= _ <Op If>                        <Op Assign> ::= ^ <Op If>
-        <Op If> ::= _ <Op Or>                            <Op If> ::= ^ <Op Or>
-        <Op Or> ::= _ '||'                               <Op Or> ::= ^ '||'
+        <Expr> ::= <Expr> ',' _ <Op Assign>
+        <Op Assign> ::= _ <Op If> '=' <Op Assign>
+        <Op Assign> ::= _ <Op If>
+        <Op If> ::= _ <Op Or>
+        <Op Or> ::= _ '||'
 
         '||' s 11
         <Op Assign> g 21
@@ -382,22 +348,18 @@ State 17
 
 
 State 18
-        Prior States: 12
-
-        <Array> ::= '[' <Expr> ']' _                     <Array> ::= '[' <Expr> ']' ^
+        <Array> ::= '[' <Expr> ']' _
 
         ';' r 5
         '=' r 5
 
 
 State 19
-        Prior States: 14
-
-        <Op Assign> ::= <Op If> '=' _ <Op Assign>        <Op Assign> ::= <Op If> '=' ^ <Op Assign>
-        <Op Assign> ::= _ <Op If> '=' <Op Assign>        <Op Assign> ::= ^ <Op If> '=' <Op Assign>
-        <Op Assign> ::= _ <Op If>                        <Op Assign> ::= ^ <Op If>
-        <Op If> ::= _ <Op Or>                            <Op If> ::= ^ <Op Or>
-        <Op Or> ::= _ '||'                               <Op Or> ::= ^ '||'
+        <Op Assign> ::= <Op If> '=' _ <Op Assign>
+        <Op Assign> ::= _ <Op If> '=' <Op Assign>
+        <Op Assign> ::= _ <Op If>
+        <Op If> ::= _ <Op Or>
+        <Op Or> ::= _ '||'
 
         '||' s 11
         <Op Assign> g 22
@@ -406,94 +368,24 @@ State 19
 
 
 State 20
-        Prior States: 16
-
-        <Var> ::= Id <Array> '=' <Op If> _               <Var> ::= Id <Array> '=' <Op If> ^
+        <Var> ::= Id <Array> '=' <Op If> _
 
         ';' r 4
 
 
 State 21
-        Prior States: 17
-
-        <Expr> ::= <Expr> ',' <Op Assign> _              <Expr> ::= <Expr> ',' <Op Assign> ^
+        <Expr> ::= <Expr> ',' <Op Assign> _
 
         ',' r 33
         ']' r 33
 
 
 State 22
-        Prior States: 19
-
-        <Op Assign> ::= <Op If> '=' <Op Assign> _        <Op Assign> ::= <Op If> '=' <Op Assign> ^
+        <Op Assign> ::= <Op If> '=' <Op Assign> _
 
         ',' r 35
         ']' r 35
 
 
-
-
-========================================
-System Log
-========================================
-
-Grammar        Warning           Unreachable rule: <Arg>
-Grammar        Warning           Unreachable rule: <Block>
-Grammar        Warning           Unreachable rule: <Case Stms>
-Grammar        Warning           Unreachable rule: <Normal Stm>
-Grammar        Warning           Unreachable rule: <Op Add>
-Grammar        Warning           Unreachable rule: <Op And>
-Grammar        Warning           Unreachable rule: <Op Compare>
-Grammar        Warning           Unreachable rule: <Op Equate>
-Grammar        Warning           Unreachable rule: <Op Mult>
-Grammar        Warning           Unreachable rule: <Op Shift>
-Grammar        Warning           Unreachable rule: <Op Unary>
-Grammar        Warning           Unreachable rule: <Stm>
-Grammar        Warning           Unreachable rule: <Stm List>
-Grammar        Warning           Unreachable rule: <Then Stm>
-Grammar        Warning           Unreachable rule: <Value>
-Grammar        Warning           Unused terminal: -
-Grammar        Warning           Unused terminal: --
-Grammar        Warning           Unused terminal: !
-Grammar        Warning           Unused terminal: !=
-Grammar        Warning           Unused terminal: %
-Grammar        Warning           Unused terminal: &
-Grammar        Warning           Unused terminal: &&
-Grammar        Warning           Unused terminal: (
-Grammar        Warning           Unused terminal: )
-Grammar        Warning           Unused terminal: *
-Grammar        Warning           Unused terminal: /
-Grammar        Warning           Unused terminal: :
-Grammar        Warning           Unused terminal: {
-Grammar        Warning           Unused terminal: }
-Grammar        Warning           Unused terminal: ~
-Grammar        Warning           Unused terminal: +
-Grammar        Warning           Unused terminal: ++
-Grammar        Warning           Unused terminal: <
-Grammar        Warning           Unused terminal: <=
-Grammar        Warning           Unused terminal: ==
-Grammar        Warning           Unused terminal: >
-Grammar        Warning           Unused terminal: >=
-Grammar        Warning           Unused terminal: break
-Grammar        Warning           Unused terminal: case
-Grammar        Warning           Unused terminal: CharLiteral
-Grammar        Warning           Unused terminal: continue
-Grammar        Warning           Unused terminal: DecLiteral
-Grammar        Warning           Unused terminal: default
-Grammar        Warning           Unused terminal: do
-Grammar        Warning           Unused terminal: else
-Grammar        Warning           Unused terminal: FloatLiteral
-Grammar        Warning           Unused terminal: for
-Grammar        Warning           Unused terminal: goto
-Grammar        Warning           Unused terminal: HexLiteral
-Grammar        Warning           Unused terminal: if
-Grammar        Warning           Unused terminal: OctLiteral
-Grammar        Warning           Unused terminal: return
-Grammar        Warning           Unused terminal: StringLiteral
-Grammar        Warning           Unused terminal: switch
-Grammar        Warning           Unused terminal: while
-Grammar        Success           The grammar was successfully analyzed
-LALR States    Success           LALR Table was succesfully created
-DFA States     Success           The DFA State Table was successfully created
 
 
