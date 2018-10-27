@@ -42,3 +42,4 @@ tmtagsHistory
 .bundle
 
 venv/
+compiler/outputs/*
