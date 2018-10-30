@@ -635,7 +635,7 @@ class Constructor(object):
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
     def build_separators(self):
-        self.separators = ['(', ')', ':', '<', '>', '=', ' ', '"', "'"]
+        self.separators = ['(', ')', ':', '<', '>', '=', ' ', '"', "'", '{', '}', ';']
         self.double_separators = ['<=', '>=', '==', '!=']
 
     def clean_source_code(self):

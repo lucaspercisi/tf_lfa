@@ -58,17 +58,23 @@ class LALR(object):
         i = 0  # posição atual na fita ou TS
         self.stack.append(0)  # empilha o estado inicial
 
+        # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
+        for line_ts in range(len(self.st)):
+            for line_g in range(len(self.dict)):
+                if self.st[line_ts]['label'] == self.dict[line_g]:
+                    self.st[line_ts]['state'] = line_g
+
         while True:
             try:
                 item = self.st[i]
             except IndexError:
-                print('Fim inesperado do código fonte')
+                print('\nFim inesperado do código fonte')
                 return
 
             try:
                 action_obj = self.table[self.stack[-1]][item.get('state')]
-            except IndexError:
-                print('Erro de sintaxe na linha {}'.format(item.get('line')))
+            except KeyError:
+                print('\nErro de sintaxe na linha {}, token "{}"'.format(item.get('line'), item.get('label')))
                 return
 
             action = action_obj.action
@@ -82,6 +88,7 @@ class LALR(object):
                 self.stack.append(item.get('state'))
                 self.stack.append(next_state)
                 i += 1
+
             elif action == 'reduce':  # redução
                 """
                 Retira da pilha o dobro do tamanho da produção indicada na ação
@@ -91,19 +98,26 @@ class LALR(object):
                 prod = self.productions.get(next_state)
                 size = prod.size*2
 
-                for i in range(0, size+1):
+                for i in range(0, size):
                     self.stack.pop()
 
                 curr_state = self.stack[-1]
-                self.stack.append(prod.nonterminal)
-                self.stack.append(self.table[curr_state][prod.nonterminal].state)
+                self.stack.append(int(prod.nonterminal))
+                self.stack.append(self.table[curr_state][int(prod.nonterminal)].state)
+
+                #Verifica se após redução encontrou o 'aceite'
+                if self.table[self.stack[-1]][item.get('state')].action == 'accept':
+                    print('\nAceite')
+                    return
+
             elif action == 'goto':  # salto
                 self.stack.append(action)
                 self.stack.append(next_state)
                 self.stack.pop()
                 self.stack.pop()
-            else:  # 'accept' aceite
-                print('Aceite')
+
+            elif action == 'accept':
+                print('\nAceite')
                 return
 
     def is_terminal(self, sy):

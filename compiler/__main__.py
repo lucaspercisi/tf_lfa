@@ -1,5 +1,5 @@
-from .lexical import Constructor
-from .sintax import LALR
+from compiler.lexical import Constructor
+from compiler.sintax import LALR
 
 # AUTÔMATO FINITO
 # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente do ponto.
