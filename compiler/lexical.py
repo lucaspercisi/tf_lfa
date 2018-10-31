@@ -649,6 +649,14 @@ class Constructor(object):
         while '' in self.sourceCode:
             self.sourceCode.remove('')
 
+    #Verifica se existe estados de erro na TS
+    def verify_lexical_errors(self):
+        error_state = list(self.afd.keys())[-1]
+        for line in self.st:
+            if line['state'] is error_state:
+                print('\nErro léxico: linha: {}, token: "{}"'.format(line['line']+1, line['label']))
+
+
     def show_symbol_table(self):
         for item in self.st:
             print(item)
