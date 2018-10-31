@@ -634,6 +634,9 @@ class Constructor(object):
                     state = 0  # Reinicia o estado de busca.
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
+        self.st.append({'line': line, 'state': state, 'label': 'EOF'})
+
+
     def build_separators(self):
         self.separators = ['(', ')', ':', '<', '>', '=', ' ', '"', "'", '{', '}', ';']
         self.double_separators = ['<=', '>=', '==', '!=']
