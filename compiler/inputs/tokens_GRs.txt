@@ -1,8 +1,6 @@
 while
 if
 int
-extern
-EOF
 <
 >
 :
@@ -21,17 +19,14 @@ EOF
 }
 ;
 
-<S> ::= a<A> | e<A> | i<A> | o<A> | u<A>
-<A> ::= a<A> | e<A> | i<A> | o<A> | u<A> | &
-
-<S> ::= x<S> | <A>
-<A> ::= y<A> | <B>
-<B> ::= z<B> | &
-
-<S> ::= <I> | <F>
+<S> ::= <I> | <F> | <V> | <C>
 <I> ::= <N> | +<N> | -<N>
 <N> ::= 0<N> | 1<N> | 2<N> | 3<N> | 4<N> | 5<N> | 6<N> | 7<N> | 8<N> | 9<N> | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 <F> ::= <M> | +<M> | -<M> | <P> | +<P> | -<P>
 <M> ::= 0<M> | 1<M> | 2<M> | 3<M> | 4<M> | 5<M> | 6<M> | 7<M> | 8<M> | 9<M> | <P>
 <P> ::= .<N>
+<V> ::= a<V> | b<V> | c<V> | d<V> | e<V> | f<V> | g<V> | h<V> | i<V> | j<V> | k<V> | l<V> | m<V> | n<V> | o<V> | p<V> | q<V> | r<V> | s<V> | t<V> | u<V>| v<V> | w<V> | x<V> | y<V> | z<V> | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+<C> ::= A<C> | B<C> | C<C> | D<C> | E<C> | F<C> | G<C> | H<C> | I<C> | J<C> | K<C> | L<C> | M<C> | N<C> | O<C> | P<C> | Q<C> | R<C> | S<C> | T<C> | U<C>| V<C> | W<C> | X<C> | Y<C> | Z<C> | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+
+
 

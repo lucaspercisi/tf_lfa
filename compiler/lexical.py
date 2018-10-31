@@ -653,9 +653,8 @@ class Constructor(object):
     def verify_lexical_errors(self):
         error_state = list(self.afd.keys())[-1]
         for line in self.st:
-            if line['state'] is error_state:
+            if line['state'] == error_state:
                 print('\nErro léxico: linha: {}, token: "{}"'.format(line['line']+1, line['label']))
-
 
     def show_symbol_table(self):
         for item in self.st:
