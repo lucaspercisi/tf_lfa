@@ -1,0 +1,18 @@
+"Case Sensitive" = 'True'
+"Start Symbol" = <Main>
+
+{Id Head}        = {Letter} + [_]
+{Id Tail}        = {Id Head} + {Digit}
+
+Id   = {Id Head}{Id Tail}*
+
+<Main>  ::= <Var> <Main>
+         |
+          
+<Var>   ::= <varType> <varName>
+         
+<varType>   ::= int
+             | float
+             
+<varName>   ::= Id
+
