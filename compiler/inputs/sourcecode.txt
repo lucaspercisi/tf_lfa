@@ -1,5 +1,4 @@
-int aou
-float aei
-123
-
-
+int a
+int e
+float i
+float o

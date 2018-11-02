@@ -91,6 +91,7 @@ class LALR(object):
                 """
                 prod = self.productions.get(next_state)
                 size = prod.size*2
+                # size = prod.size+1
 
                 for i in range(0, size):
                     self.stack.pop()
@@ -165,18 +166,19 @@ class LALR(object):
                 # MAPEIA TOKENS IGUAIS
                 if self.st[line_ts]['label'] == self.dict[line_g]:
                     self.st[line_ts]['state'] = line_g
+                    self.st[line_ts]['type'] = values_ditc[line_g]
 
-                if self.st[line_ts]['state'] == 30:
-                    self.st[line_ts]['state'] = values_ditc.index('varName')
-                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('varName')]
+                if self.st[line_ts]['state'] == 40:
+                    self.st[line_ts]['state'] = values_ditc.index('Id')
+                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('Id')]
 
-                if self.st[line_ts]['state'] == 32:
-                    self.st[line_ts]['state'] = values_ditc.index('int')
-                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('int')]
-
-                if self.st[line_ts]['state'] == 46:
-                    self.st[line_ts]['state'] = values_ditc.index('float')
-                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('float')]
+                # if self.st[line_ts]['state'] == 32:
+                #     self.st[line_ts]['state'] = values_ditc.index('int')
+                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('int')]
+                #
+                # if self.st[line_ts]['state'] == 46:
+                #     self.st[line_ts]['state'] = values_ditc.index('float')
+                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('float')]
 
                 if self.st[line_ts]['state'] == constructor.error_state:
                     self.st[line_ts]['state'] = values_ditc.index('Error')
