@@ -24,4 +24,5 @@ constructor.verify_lexical_errors()  # Exibe erros lexicos da tabela de simbolos
 # Analisador sintático LALR
 lalr = LALR(st=constructor.st)
 lalr.load()
+lalr.mapping_from_gold(constructor)
 lalr.analyze()

@@ -58,12 +58,6 @@ class LALR(object):
         i = 0  # posição atual na fita ou TS
         self.stack.append(0)  # empilha o estado inicial
 
-        # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
-        for line_ts in range(len(self.st)):
-            for line_g in range(len(self.dict)):
-                if self.st[line_ts]['label'] == self.dict[line_g]:
-                    self.st[line_ts]['state'] = line_g
-
         while True:
             try:
                 item = self.st[i]
@@ -158,3 +152,34 @@ class LALR(object):
                 action_symbol = int(action.get('SymbolIndex'))
                 action_obj = Action(ACTION_TYPES[action.get('Action')], int(action.get('Value')))
                 self.table[curr_state][action_symbol] = action_obj
+
+    def mapping_from_gold(self, constructor):
+        # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
+
+        values_ditc = list(self.dict.values())
+
+        for line_ts in range(len(self.st)):
+            for line_g in range(len(self.dict)):
+
+                # TODO: Fazer mapeamento completo
+                # MAPEIA TOKENS IGUAIS
+                if self.st[line_ts]['label'] == self.dict[line_g]:
+                    self.st[line_ts]['state'] = line_g
+
+                if self.st[line_ts]['state'] == 30:
+                    self.st[line_ts]['state'] = values_ditc.index('varName')
+                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('varName')]
+
+                if self.st[line_ts]['state'] == 32:
+                    self.st[line_ts]['state'] = values_ditc.index('int')
+                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('int')]
+
+                if self.st[line_ts]['state'] == 46:
+                    self.st[line_ts]['state'] = values_ditc.index('float')
+                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('float')]
+
+                if self.st[line_ts]['state'] == constructor.error_state:
+                    self.st[line_ts]['state'] = values_ditc.index('Error')
+                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('Error')]
+
+
