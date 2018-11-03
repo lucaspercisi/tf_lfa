@@ -59,8 +59,8 @@ default
 --
 
 <S> ::= <A> | <B>
-<A> ::= a<A> | b<A> | c<A> | d<A> | e<A> | f<A> | g<A>| h<A> | i<A> | j<A> | k<A> | l<A> | m<A> | n<A>| o<A> | p<A> | q<A> | r<A> | s<A> | t<A> | u<A> | v<A> | w<A> | x<A> | y<A> | z<A> | a<N> | b<N> | c<N> | d<N> | e<N> | f<N> | g<N>| h<N> | i<N> | j<N> | k<N> | l<N> | m<N> | n<N>| o<N> | p<N> | q<N> | r<N> | s<N> | t<N> | u<N> | v<N> | w<N> | x<N> | y<N> | z<N> | <B>
-<B> ::= A<B> | B<B> | C<B> | D<B> | E<B> | F<B> | G<B> | H<B> | I<B> | J<B> | K<B> | L<B> | M<B> | N<B> | O<B> | P<B> | Q<B> | R<B> | S<B> | T<B> | U<B> | V<B> | W<B> | X<B> | Y<B> | Z<B> | A<N> | B<N> | C<N> | D<N> | E<N> | F<N> | G<N> | H<N> | I<N> | J<N> | K<N> | L<N> | M<N> | N<N> | O<N> | P<N> | Q<N> | R<N> | S<N> | T<N> | U<N> | V<N> | W<N> | X<N> | Y<N> | Z<N> | <A>
+<A> ::= a<A> | b<A> | c<A> | d<A> | e<A> | f<A> | g<A>| h<A> | i<A> | j<A> | k<A> | l<A> | m<A> | n<A>| o<A> | p<A> | q<A> | r<A> | s<A> | t<A> | u<A> | v<A> | w<A> | x<A> | y<A> | z<A> | _<A> | a<N> | b<N> | c<N> | d<N> | e<N> | f<N> | g<N>| h<N> | i<N> | j<N> | k<N> | l<N> | m<N> | n<N>| o<N> | p<N> | q<N> | r<N> | s<N> | t<N> | u<N> | v<N> | w<N> | x<N> | y<N> | z<N> | <B>
+<B> ::= A<B> | B<B> | C<B> | D<B> | E<B> | F<B> | G<B> | H<B> | I<B> | J<B> | K<B> | L<B> | M<B> | N<B> | O<B> | P<B> | Q<B> | R<B> | S<B> | T<B> | U<B> | V<B> | W<B> | X<B> | Y<B> | Z<B> | _<B> | A<N> | B<N> | C<N> | D<N> | E<N> | F<N> | G<N> | H<N> | I<N> | J<N> | K<N> | L<N> | M<N> | N<N> | O<N> | P<N> | Q<N> | R<N> | S<N> | T<N> | U<N> | V<N> | W<N> | X<N> | Y<N> | Z<N> | <A>
 <N> ::= 0<N> | 1<N> | 2<N> | 3<N> | 4<N> | 5<N> | 6<N> | 7<N> | 8<N> | 9<N> | <S> | &
 
 <S> ::= <N> | -<N>

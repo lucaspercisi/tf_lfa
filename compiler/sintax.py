@@ -159,7 +159,7 @@ class LALR(object):
 
         values_ditc = list(self.dict.values())
 
-        # TODO: Estados estão variando
+        # TODO: Estados gerados pelas GR's estão variando
         # ids = (138, 139, 140, 142, 144, 147, 157)
 
         for line_ts in range(len(self.st)):
@@ -169,22 +169,18 @@ class LALR(object):
                 # MAPEIA TOKENS IGUAIS
                 if self.st[line_ts]['label'] == self.dict[line_g]:
                     self.st[line_ts]['state'] = line_g
-                    self.st[line_ts]['type'] = values_ditc[line_g]
+                    self.st[line_ts]['status'] = "MAPPED"
 
-                # if self.st[line_ts]['state'] in ids:
-                #     self.st[line_ts]['state'] = values_ditc.index('Id')
-                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('Id')]
+                # if self.st[line_ts]['state'] == 134:
+                #     self.st[line_ts]['state'] = values_ditc.index('DecLiteral')
+                #     self.st[line_ts]['status'] = "MAPPED"
 
-                # if self.st[line_ts]['state'] == 32:
-                #     self.st[line_ts]['state'] = values_ditc.index('int')
-                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('int')]
-                #
                 # if self.st[line_ts]['state'] == 46:
-                #     self.st[line_ts]['state'] = values_ditc.index('float')
-                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('float')]
+                #     self.st[line_ts]['state'] = values_ditc.index('FloatLiteral')
+                #     self.st[line_ts]['status'] = "MAPPED"
 
                 if self.st[line_ts]['state'] == values_ditc.index('Error'):
                     self.st[line_ts]['state'] = values_ditc.index('Error')
-                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('Error')]
+                    self.st[line_ts]['status'] = "MAPPED"
 
 
