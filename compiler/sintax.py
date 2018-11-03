@@ -161,7 +161,6 @@ class LALR(object):
         for line_ts in self.st:
             for line_g in range(len(self.dict)):
 
-                # TODO: Fazer mapeamento completo
                 # MAPEIA TOKENS IGUAIS
                 if line_ts['label'] == self.dict[line_g]:
                     line_ts['state'] = line_g
@@ -171,6 +170,7 @@ class LALR(object):
                     line_ts['state'] = values_ditc.index('DecLiteral')
                     line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('DecLiteral')])
 
+                #TODO: Verificar gramática de reais.
                 # if line_ts['state'] == 134:
                 #     line_ts['state'] = values_ditc.index('FloatLiteral')
                 #     line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('FloatLiteral')])
