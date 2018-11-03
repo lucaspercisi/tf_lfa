@@ -154,10 +154,13 @@ class LALR(object):
                 action_obj = Action(ACTION_TYPES[action.get('Action')], int(action.get('Value')))
                 self.table[curr_state][action_symbol] = action_obj
 
-    def mapping_from_gold(self, constructor):
+    def mapping_from_gold(self):
         # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
 
         values_ditc = list(self.dict.values())
+
+        # TODO: Estados estão variando
+        # ids = (138, 139, 140, 142, 144, 147, 157)
 
         for line_ts in range(len(self.st)):
             for line_g in range(len(self.dict)):
@@ -168,9 +171,9 @@ class LALR(object):
                     self.st[line_ts]['state'] = line_g
                     self.st[line_ts]['type'] = values_ditc[line_g]
 
-                if self.st[line_ts]['state'] == 40:
-                    self.st[line_ts]['state'] = values_ditc.index('Id')
-                    self.st[line_ts]['type'] = values_ditc[values_ditc.index('Id')]
+                # if self.st[line_ts]['state'] in ids:
+                #     self.st[line_ts]['state'] = values_ditc.index('Id')
+                #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('Id')]
 
                 # if self.st[line_ts]['state'] == 32:
                 #     self.st[line_ts]['state'] = values_ditc.index('int')
@@ -180,7 +183,7 @@ class LALR(object):
                 #     self.st[line_ts]['state'] = values_ditc.index('float')
                 #     self.st[line_ts]['type'] = values_ditc[values_ditc.index('float')]
 
-                if self.st[line_ts]['state'] == constructor.error_state:
+                if self.st[line_ts]['state'] == values_ditc.index('Error'):
                     self.st[line_ts]['state'] = values_ditc.index('Error')
                     self.st[line_ts]['type'] = values_ditc[values_ditc.index('Error')]
 

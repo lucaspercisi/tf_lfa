@@ -14,8 +14,8 @@ int soma(int a, int e, float i, float o){
 
     while(i<a){
 
-    e += 1;
-    o -= 4;
+    e += 889;
+    o -= 6445;
 
     }
 

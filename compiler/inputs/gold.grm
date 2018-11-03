@@ -4,15 +4,181 @@
 {Id Head}        = {Letter} + [_]
 {Id Tail}        = {Id Head} + {Digit}
 
-Id   = {Id Head}{Id Tail}*
+{String Ch}      = {Printable} - ["]
+{Char Ch}        = {Printable} - ['']
 
-<Main>  ::= <Var> <Main>
-         |
-          
-<Var>   ::= <varType> <varName>
-         
-<varType>   ::= int
-             | float
+DecLiteral       = [123456789]{digit}*
+FloatLiteral     = {Digit}*'.'{Digit}+
+
+StringLiteral    = '"'( {String Ch} | '\'{Printable} )* '"'
+CharLiteral      = '' ( {Char Ch} | '\'{Printable} )''
+
+Id               = {Id Head}{Id Tail}*
+
+!=======================================================
+
+<Main> ::= <Init> <Main>
+          |
+
+<Init>  ::= <Func Decl>
+          | <Var Decl>    
+              
+! ===================================================================
+! Function  Declaration
+! ===================================================================
+
+<Func Decl>  ::= <Func ID> '(' <Params>  ')' <Block>
+               | <Func ID> '(' ')' <Block>
+
+<Params>     ::= <Param> ',' <Params>
+               | <Param>
+               
+<Param>      ::= const <Type> ID
+               |       <Type> ID
+
+<Func ID>    ::= <Type> ID
+               | ID
+               
+
+! ===================================================================
+! Variable Declaration
+! ===================================================================
+
+<Var Decl>     ::= <Type> <Var> ';'
              
-<varName>   ::= Id
+<Var>      ::= ID <Array>
+             | ID <Array> '=' <Op If> 
 
+<Array>    ::= '[' <Expr> ']'
+             | '[' ']'
+             |
+         
+! ===================================================================
+! Types
+! ===================================================================
+
+<Type>     ::= char
+             | int
+             | float
+             | void  
+
+! ===================================================================
+! Statements
+! ===================================================================
+
+<Stm>        ::= <Var Decl>
+               | Id ':'                            !Label
+               | if '(' <Expr> ')' <Stm>          
+               | if '(' <Expr> ')' <Then Stm> else <Stm>         
+               | while '(' <Expr> ')' <Stm> 
+               | for '(' <Arg> ';' <Arg> ';' <Arg> ')' <Stm>
+               | <Normal Stm>
+
+<Then Stm>   ::= if '(' <Expr> ')' <Then Stm> else <Then Stm> 
+               | while '(' <Expr> ')' <Then Stm> 
+               | for '(' <Arg> ';' <Arg> ';' <Arg> ')' <Then Stm>
+               | <Normal Stm>
+
+<Normal Stm> ::= do <Stm> while '(' <Expr> ')'
+               | switch '(' <Expr> ')' '{' <Case Stms> '}'
+               | <Block>
+               | <Expr> ';'               
+               | goto Id ';'
+               | break ';'
+               | continue ';'
+               | return <Expr> ';'
+               | ';'              !Null statement
+
+
+<Arg>       ::= <Expr> 
+              | 
+
+<Case Stms> ::= case <Value> ':' <Stm List> <Case Stms>
+              | default ':' <Stm List>                  
+              |
+
+<Block>     ::= '{' <Stm List> '}' 
+
+<Stm List>  ::=  <Stm> <Stm List> 
+              | 
+         
+! ===================================================================
+! Here begins the C's 15 levels of operator precedence.
+! ===================================================================
+
+<Expr>       ::= <Expr> ',' <Op Assign>   
+               | <Op Assign>
+
+<Op Assign>  ::= <Op If> '='   <Op Assign>
+               | <Op If> '+='  <Op Assign>
+               | <Op If> '-='  <Op Assign>
+               | <Op If> '*='  <Op Assign>
+               | <Op If> '/='  <Op Assign>
+               | <Op If> '^='  <Op Assign>
+               | <Op If> '&='  <Op Assign>
+               | <Op If> '|='  <Op Assign>
+               | <Op If>
+
+<Op If>      ::= <Op Or> '?' <Op If> ':' <Op If>
+               | <Op Or>
+
+<Op Or>      ::= <Op Or> '||' <Op And>
+               | <Op And>
+
+<Op And>     ::= <Op And> '&&' <Op BinOR>
+               | <Op BinOR>
+
+<Op BinOR>   ::= <Op BinOr> '|' <Op BinXOR>
+               | <Op BinXOR>
+
+<Op BinXOR>  ::= <Op BinXOR> '^' <Op BinAND>
+               | <Op BinAND>
+
+<Op BinAND>  ::= <Op BinAND> '&' <Op Equate>
+               | <Op Equate>
+
+<Op Equate>  ::= <Op Equate> '==' <Op Compare>
+               | <Op Equate> '!=' <Op Compare>
+               | <Op Compare>
+
+<Op Compare> ::= <Op Compare> '<'  <Op Shift>
+               | <Op Compare> '>'  <Op Shift>
+               | <Op Compare> '<=' <Op Shift>
+               | <Op Compare> '>=' <Op Shift>
+               | <Op Shift>
+
+<Op Shift>   ::= <Op Shift> '<<' <Op Add>
+               | <Op Shift> '>>' <Op Add>
+               | <Op Add>
+
+<Op Add>     ::= <Op Add> '+' <Op Mult>
+               | <Op Add> '-' <Op Mult>
+               | <Op Mult>
+
+<Op Mult>    ::= <Op Mult> '*' <Op Unary>
+               | <Op Mult> '/' <Op Unary>
+               | <Op Mult> '%' <Op Unary>
+               | <Op Unary>
+
+<Op Unary>   ::= '!'    <Op Unary>
+               | '~'    <Op Unary>   
+               | '-'    <Op Unary>
+               | '*'    <Op Unary>
+               | '&'    <Op Unary>               
+               | '++'   <Op Unary>
+               | '--'   <Op Unary>
+               | '(' <Type> ')' <Op Unary>   !CAST
+               | sizeof '(' <Type> ')'
+               | <Value>
+
+<Value>      ::= DecLiteral  
+               | StringLiteral
+               | CharLiteral
+               | FloatLiteral
+               | Id '(' <Expr> ')'
+               | Id '(' ')'          
+
+               | Id
+               | '(' <Expr> ')'
+
+ 

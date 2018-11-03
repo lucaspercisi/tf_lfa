@@ -18,12 +18,11 @@ constructor.print_afd()  # imprime o AFD finalizado
 constructor.build_separators()  # Constroí as listas contendo os separadores da linguagem.
 constructor.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
 constructor.build_symbol_table()  # Constrói a Tabela de Símbolos de acordo com o AF
-# constructor.show_symbol_table()  # Mostra Tabela de Símbolos
-constructor.verify_error_state()
-
 # Analisador sintático LALR
 lalr = LALR(st=constructor.st)
 lalr.load()
-lalr.mapping_from_gold(constructor)
-constructor.show_symbol_table()
+lalr.mapping_from_gold()
+
+constructor.show_symbol_table()  # Mostra Tabela de Símbolos
+constructor.verify_error_state()
 lalr.analyze()
