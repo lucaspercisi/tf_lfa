@@ -21,7 +21,7 @@ constructor.build_symbol_table()  # Constrói a Tabela de Símbolos de acordo co
 # Analisador sintático LALR
 lalr = LALR(st=constructor.st)
 lalr.load()
-lalr.mapping_from_gold()
+lalr.mapping_from_gold(constructor)
 
 constructor.show_symbol_table()  # Mostra Tabela de Símbolos
 constructor.verify_error_state()

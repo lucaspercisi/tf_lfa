@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 
-
 ACTION_TYPES = {
     '1': 'shift',
     '2': 'reduce',
@@ -90,7 +89,7 @@ class LALR(object):
                 para o salto na linha do estado que ficou na pilha e a coluna do não terminal
                 """
                 prod = self.productions.get(next_state)
-                size = prod.size*2
+                size = prod.size * 2
                 # size = prod.size+1
 
                 for i in range(0, size):
@@ -100,7 +99,7 @@ class LALR(object):
                 self.stack.append(int(prod.nonterminal))
                 self.stack.append(self.table[curr_state][int(prod.nonterminal)].state)
 
-                #Verifica se após redução encontrou o 'aceite'
+                # Verifica se após redução encontrou o 'aceite'
                 if self.table[self.stack[-1]][item.get('state')].action == 'accept':
                     print('\nAceite')
                     return
@@ -154,33 +153,36 @@ class LALR(object):
                 action_obj = Action(ACTION_TYPES[action.get('Action')], int(action.get('Value')))
                 self.table[curr_state][action_symbol] = action_obj
 
-    def mapping_from_gold(self):
+    def mapping_from_gold(self, constructor):
         # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
 
         values_ditc = list(self.dict.values())
 
-        # TODO: Estados gerados pelas GR's estão variando
-        # ids = (138, 139, 140, 142, 144, 147, 157)
-
-        for line_ts in range(len(self.st)):
+        for line_ts in self.st:
             for line_g in range(len(self.dict)):
 
                 # TODO: Fazer mapeamento completo
                 # MAPEIA TOKENS IGUAIS
-                if self.st[line_ts]['label'] == self.dict[line_g]:
-                    self.st[line_ts]['state'] = line_g
-                    self.st[line_ts]['status'] = "MAPPED"
+                if line_ts['label'] == self.dict[line_g]:
+                    line_ts['state'] = line_g
+                    line_ts['status'] = "MAPPED (self)"
 
-                # if self.st[line_ts]['state'] == 134:
-                #     self.st[line_ts]['state'] = values_ditc.index('DecLiteral')
-                #     self.st[line_ts]['status'] = "MAPPED"
+                if line_ts['state'] == 134:
+                    line_ts['state'] = values_ditc.index('DecLiteral')
+                    line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('DecLiteral')])
 
-                # if self.st[line_ts]['state'] == 46:
-                #     self.st[line_ts]['state'] = values_ditc.index('FloatLiteral')
-                #     self.st[line_ts]['status'] = "MAPPED"
+                # if line_ts['state'] == 134:
+                #     line_ts['state'] = values_ditc.index('FloatLiteral')
+                #     line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('FloatLiteral')])
 
-                if self.st[line_ts]['state'] == values_ditc.index('Error'):
-                    self.st[line_ts]['state'] = values_ditc.index('Error')
-                    self.st[line_ts]['status'] = "MAPPED"
+                if line_ts['state'] == values_ditc.index('Error'):
+                    line_ts['state'] = values_ditc.index('Error')
+                    line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('Error')])
 
-
+        for line in self.st:
+            try:
+                if line['state'] == constructor.error_state or line['status']:
+                    continue
+            except KeyError:
+                line['state'] = values_ditc.index('Id')
+                line['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('Id')])
