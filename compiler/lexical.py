@@ -638,8 +638,12 @@ class Constructor(object):
 
 
     def build_separators(self):
-        self.separators = ['(', ')', ':', '<', '>', '=', ' ', '"', "'", '{', '}', ';']
-        self.double_separators = ['<=', '>=', '==', '!=']
+        self.separators = ['(', ')', ':', '<', '>', '=', ' ', '"', "'", '{', '}', ';', '[', ']',
+                           '+', '-', '*', '/', ',', '?', '%', '|', '^', '&', '!']
+
+        self.double_separators = ['<=', '>=', '==', '!=', '+=', '-=', '*=', '/=',
+                                  '^=', '&=', '|=', '||', '&&', '>>', '<<', '++',
+                                  '--']
 
     def clean_source_code(self):
         for line in range(len(self.sourceCode)):
@@ -649,11 +653,10 @@ class Constructor(object):
         while '' in self.sourceCode:
             self.sourceCode.remove('')
 
-    #Verifica se existe estados de erro na TS
-    def verify_lexical_errors(self):
+    def verify_error_state(self):
         for line in self.st:
             if line['state'] == self.error_state:
-                print('\nErro léxico: linha: {}, token: "{}"'.format(line['line']+1, line['label']))
+                print("Erro léxico: linha {} '{}'".format(line['line']+1, line['label']))
 
     def show_symbol_table(self):
         for item in self.st:

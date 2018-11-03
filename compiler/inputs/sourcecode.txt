@@ -1,4 +1,25 @@
-int a
-int e
-float i
-float o
+int a;
+int e;
+float i;
+float o;
+int vetor[5];
+int init = 8;
+int vetor_init[];
+
+void print_all(){
+
+}
+
+int soma(int a, int e, float i, float o){
+
+    while(i<a){
+
+    e += 1;
+    o -= 4;
+
+    }
+
+    return (a + e) - (i / o);
+}
+
+

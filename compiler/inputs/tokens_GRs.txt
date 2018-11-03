@@ -1,6 +1,18 @@
 int
 float
+void
+char
 return
+if
+while
+else
+for
+do
+break
+continue
+switch
+case
+default
 <
 >
 :
@@ -17,16 +29,46 @@ return
 "
 {
 }
+[
+]
 ;
 +
 -
 *
 /
+,
++=
+-=
+*=
+/=
+^=
+&=
+|=
+?
+||
+&&
+>>
+<<
+%
+|
+^
+&
+!
+~
+++
+--
+.
 
-<S> ::= a<A> | e<A> | i<A> | o<A> | u<A>
-<A> ::= a<A> | e<A> | i<A> | o<A> | u<A> | &
+<S> ::= a<A> | b<A> | c<A> | d<A> | e<A> | f<A> | g<A> | h<A> | i<A> | j<A> | k<A> | l<A> | m<A> | n<A> | o<A> | p<A> | q<A> | r<A> | s<A> | t<A> | u<A> | v<A> | w<A> | x<A> | y<A> | z<A> | _<A>
+<A> ::= A<A> | B<A> | C<A> | D<A> | E<A> | F<A> | G<A> | H<A> | I<A> | J<A> | K<A> | L<A> | M<A> | N<A> | O<A> | P<A> | Q<A> | R<A> | S<A> | T<A> | U<A> | V<A> | W<A> | X<A> | Y<A> | Z<A> | _<B> | <C>
+<B> ::= 0<B> | 1<B> | 2<B> | 3<B> | 4<B> | 5<B> | 6<B> | 7<B> | 8<B> | 9<B> | <C>
+<C> ::= <S> | <A> | &
 
 <S> ::= <N> | -<N>
 <N> ::= 0<M> | 1<M> | 2<M> | 3<M> | 4<M> | 5<M> | 6<M> | 7<M> | 8<M> | 9<M>
+<M> ::= 0<M> | 1<M> | 2<M> | 3<M> | 4<M> | 5<M> | 6<M> | 7<M> | 8<M> | 9<M> | &
+
+<S> ::= <F> | -<F>
+<N> ::= 0<N> | 1<N> | 2<N> | 3<N> | 4<N> | 5<N> | 6<N> | 7<N> | 8<N> | 9<N> |.<M>
 <M> ::= 0<M> | 1<M> | 2<M> | 3<M> | 4<M> | 5<M> | 6<M> | 7<M> | 8<M> | 9<M> | &
 
