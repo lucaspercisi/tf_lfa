@@ -1,0 +1,60 @@
+﻿========================================
+Parse Tree
+========================================
+
++--<Main> ::= <Var> <Main>
+|  +--<Var> ::= <varType> <varName>
+|  |  +--<varType> ::= int
+|  |  |  +--int
+|  |  +--<varName> ::= Id
+|  |  |  +--a
+|  +--<Main> ::= <Var> <Main>
+|  |  +--<Var> ::= <varType> <varName>
+|  |  |  +--<varType> ::= int
+|  |  |  |  +--int
+|  |  |  +--<varName> ::= Id
+|  |  |  |  +--e
+|  |  +--<Main> ::= <Var> <Main>
+|  |  |  +--<Var> ::= <varType> <varName>
+|  |  |  |  +--<varType> ::= float
+|  |  |  |  |  +--float
+|  |  |  |  +--<varName> ::= Id
+|  |  |  |  |  +--i
+|  |  |  +--<Main> ::= 
+
+
+========================================
+Parse Actions
+========================================
+
+Parse Action      State    Line     Col   Parse Value          Description                  
+---------------   -----   -----   -----   ------------------   -----------------------------
+Token Read            0       0       0   int                  Token type: int              
+Shift                 2                                        The parser shifted to state 2
+Token Read            2       0       4   a                    Token type: Id               
+Reduce                5                   (1) ::= int          <varType> ::= int            
+Shift                 7                                        The parser shifted to state 7
+Token Read            7       1       0   int                  Token type: int              
+Reduce                8                   (2) ::= a            <varName> ::= Id             
+Reduce                4                   (3) ::= (1) (2)      <Var> ::= <varType> <varName>
+Shift                 2                                        The parser shifted to state 2
+Token Read            2       1       4   e                    Token type: Id               
+Reduce                5                   (4) ::= int          <varType> ::= int            
+Shift                 7                                        The parser shifted to state 7
+Token Read            7       2       0   float                Token type: float            
+Reduce                8                   (5) ::= e            <varName> ::= Id             
+Reduce                4                   (6) ::= (4) (5)      <Var> ::= <varType> <varName>
+Shift                 1                                        The parser shifted to state 1
+Token Read            1       2       6   i                    Token type: Id               
+Reduce                5                   (7) ::= float        <varType> ::= float          
+Shift                 7                                        The parser shifted to state 7
+Token Read            7       3       0                        Token type: EOF              
+Reduce                8                   (8) ::= i            <varName> ::= Id             
+Reduce                4                   (9) ::= (7) (8)      <Var> ::= <varType> <varName>
+Reduce                6                   (10) ::=             <Main> ::=                   
+Reduce                6                   (11) ::= (9) (10)    <Main> ::= <Var> <Main>      
+Reduce                6                   (12) ::= (6) (11)    <Main> ::= <Var> <Main>      
+Reduce                3                   (13) ::= (3) (12)    <Main> ::= <Var> <Main>      
+Accept                3                                                                     
+
+
