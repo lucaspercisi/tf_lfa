@@ -551,6 +551,7 @@ class Constructor(object):
                 message = 'Letra "{}" não pertence ao alfabeto da linguagem'.format(letter)
                 return recognized, state, message
 
+            print('From:', state, 'For:', letter, 'To:', line.get(letter))
             state = line.get(letter)
 
         afd_data = self.afd[state]

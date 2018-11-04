@@ -5,24 +5,32 @@ from compiler.sintax import LALR
 # TODO: O Autômato está considerando o '.' como estado de erro quando tem números na frente do ponto.
 constructor = Constructor()
 constructor.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
-constructor.print_afnd()  # imprime o AFND carregado
+# constructor.print_afnd()  # imprime o AFND carregado
 constructor.remove_epsilon()  # remove os EPSILON transições
-constructor.print_afnd()  # imprime o AFND livre de épsilon transições
+# constructor.print_afnd()  # imprime o AFND livre de épsilon transições
 constructor.afnd_determinization()  # determiniza o afnd
-constructor.print_afd()  # imprime o AFD
+# constructor.print_afd()  # imprime o AFD
 constructor.remove_dead()  # remove os estados mortos
 constructor.remove_unreachable()  # remove os estados inatingíveis
 constructor.print_afd()  # imprime o AFD finalizado
 
-#  TABELA DE SÍMBOLOS
-constructor.build_separators()  # Constroí as listas contendo os separadores da linguagem.
-constructor.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
-constructor.build_symbol_table()  # Constrói a Tabela de Símbolos de acordo com o AF
-# Analisador sintático LALR
-lalr = LALR(st=constructor.st)
-lalr.load()
-lalr.mapping_from_gold(constructor)
+recognizing_test_tokens = ['while', 'continue', 'switch', 'primeiro', 'variavel_', '564', '-235', 'variavel_540_', '-5.18', '5437.22']
 
-constructor.show_symbol_table()  # Mostra Tabela de Símbolos
-constructor.verify_error_state()
-lalr.analyze()
+for token in recognizing_test_tokens:
+    print('\nReconhecendo token [ {} ]'.format(token))
+    recognized, state, message = constructor.token_recognition(token)
+    print(recognized, state, message)
+
+
+# #  TABELA DE SÍMBOLOS
+# constructor.build_separators()  # Constroí as listas contendo os separadores da linguagem.
+# constructor.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
+# constructor.build_symbol_table()  # Constrói a Tabela de Símbolos de acordo com o AF
+# # Analisador sintático LALR
+# lalr = LALR(st=constructor.st)
+# lalr.load()
+# lalr.mapping_from_gold(constructor)
+#
+# constructor.show_symbol_table()  # Mostra Tabela de Símbolos
+# constructor.verify_error_state()
+# lalr.analyze()
