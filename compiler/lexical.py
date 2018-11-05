@@ -655,11 +655,6 @@ class Constructor(object):
         while '' in self.sourceCode:
             self.sourceCode.remove('')
 
-    def verify_error_state(self):
-        for line in self.st:
-            if line['state'] == self.error_state:
-                print("Erro léxico: linha {} '{}'".format(line['line']+1, line['label']))
-
     def show_symbol_table(self):
         for item in self.st:
             print(item)

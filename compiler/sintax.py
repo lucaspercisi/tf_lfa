@@ -50,115 +50,113 @@ class LALR(object):
         self.productions = {}  # produções da gramática LC
         # dicionário tradutor de número de estado do AF para número do LALR
         self.translator = {
-            186: 59,  # int
-            202: 53,  # float
-            193: 64,  # void
-            192: 45,  # char
-            209: 60,  # return
-            171: 58,  # if
-            204: 65,  # while
-            199: 52,  # else
-            181: 55,  # for
-            173: 51,  # do
-            203: 43,  # break
-            213: 48,  # continue
-            207: 63,  # switch
-            190: 44,  # case
-            212: 50,  # default
-            157: 34,  # <
-            147: 40,  # >
+            176: 59,  # int
+            197: 53,  # float
+            189: 64,  # void
+            183: 45,  # char
+            202: 60,  # return
+            162: 58,  # if
+            200: 65,  # while
+            187: 52,  # else
+            179: 55,  # for
+            167: 51,  # do
+            196: 43,  # break
+            207: 48,  # continue
+            204: 63,  # switch
+            184: 44,  # case
+            206: 50,  # default
+            142: 34,  # <
+            139: 40,  # >
             71: 18,  # :
             72: 11,  # (
             73: 12,  # )
-            141: 37,  # =
+            149: 37,  # =
             76: 39,  # ==
             78: 36,  # <=
             80: 41,  # >=
             82: 6,  # !=
-            156: None,  # ' NÃO MAPEADO, NÃO USAMOS STRINGS, NÃO MUDEI PARA NÃO TER QUE REFAZER O TRADUTOR
-            148: None,  # " NÃO MAPEADO, NÃO USAMOS STRINGS, NÃO MUDEI PARA NÃO TER QUE REFAZER O TRADUTOR
-            87: 25,  # {
-            88: 29,  # }
-            89: 21,  # [
-            90: 22,  # ]
-            91: 19,  # ;
-            155: 31,  # +
-            146: 3,  # -
-            149: 13,  # *
-            152: 16,  # /
-            96: 15,  # ,
-            98: 33,  # +=
-            100: 38,  # -=
-            102: 14,  # *=
-            104: 17,  # /=
-            106: 24,  # ^=
-            108: 10,  # &=
-            110: 28,  # |=
-            111: 20,  # ?
-            113: 27,  # ||
-            115: 9,  # &&
-            117: 42,  # >>
-            119: 35,  # <<
-            120: 7,  # %
-            151: 26,  # |
-            145: 23,  # ^
-            150: 8,  # &
-            153: 5,  # !
-            125: 30,  # ~
-            127: 32,  # ++
-            129: 4,  # --
-            130: 96,  # variável
-            143: 96,  # variável
-            139: 96,  # variável
-            159: 96,  # variável
-            160: 96,  # variável
-            142: 96,  # variável
-            158: 96,  # variável
-            154: 96,  # variável
-            138: 96,  # variável
-            140: 96,  # variável
-            144: 96,  # variável
-            161: 96,  # variável
-            162: 96,  # variável
-            163: 96,  # variável
-            164: 96,  # variável
-            165: 96,  # variável
-            166: 96,  # variável
-            167: 96,  # variável
-            168: 96,  # variável
-            169: 96,  # variável
-            170: 96,  # variável
-            172: 96,  # variável
-            174: 96,  # variável
-            175: 96,  # variável
-            176: 96,  # variável
-            177: 96,  # variável
-            178: 96,  # variável
-            179: 96,  # variável
-            180: 96,  # variável
-            182: 96,  # variável
-            183: 96,  # variável
-            184: 96,  # variável
-            185: 96,  # variável
-            187: 96,  # variável
-            188: 96,  # variável
-            189: 96,  # variável
-            191: 96,  # variável
-            194: 96,  # variável
-            195: 96,  # variável
-            196: 96,  # variável
-            197: 96,  # variável
-            198: 96,  # variável
-            200: 96,  # variável
-            201: 96,  # variável
-            205: 96,  # variável
-            206: 96,  # variável
-            208: 96,  # variável
-            210: 96,  # variável
-            211: 96,  # variável
-            137: 49,  # int
-            136: 54,  # float
-            214: 1,  # erro
+            83: 25,  # {
+            84: 29,  # }
+            85: 21,  # [
+            86: 22,  # ]
+            87: 19,  # ;
+            147: 31,  # +
+            137: 3,  # -
+            140: 13,  # *
+            133: 16,  # /
+            92: 15,  # ,
+            94: 33,  # +=
+            96: 38,  # -=
+            98: 14,  # *=
+            100: 17,  # /=
+            102: 24,  # ^=
+            104: 10,  # &=
+            106: 28,  # |=
+            107: 20,  # ?
+            109: 27,  # ||
+            111: 9,  # &&
+            113: 42,  # >>
+            115: 35,  # <<
+            116: 7,  # %
+            152: 26,  # |
+            146: 23,  # ^
+            145: 8,  # &
+            148: 5,  # !
+            121: 30,  # ~
+            123: 32,  # ++
+            125: 4,  # --
+            126: 57,  # variável
+            141: 57,  # variável
+            135: 57,  # variável
+            151: 57,  # variável
+            138: 57,  # variável
+            150: 57,  # variável
+            143: 57,  # variável
+            136: 57,  # variável
+            153: 57,  # variável
+            144: 57,  # variável
+            154: 57,  # variável
+            155: 57,
+            156: 57,
+            157: 57,
+            158: 57,
+            159: 57,
+            160: 57,
+            161: 57,
+            163: 57,
+            164: 57,
+            165: 57,
+            166: 57,
+            168: 57,
+            169: 57,
+            170: 57,
+            171: 57,
+            172: 57,
+            173: 57,
+            174: 57,
+            175: 57,
+            177: 57,
+            178: 57,
+            180: 57,
+            181: 57,
+            182: 57,
+            185: 57,
+            186: 57,
+            188: 57,
+            190: 57,
+            191: 57,
+            192: 57,
+            193: 57,
+            194: 57,
+            195: 57,
+            198: 57,
+            199: 57,
+            201: 57,
+            203: 57,
+            205: 57,
+            134: 49,  # int
+            132: 54,  # float
+            208: 1,  # erro
             0: 0  # EOF
         }
 
@@ -177,6 +175,10 @@ class LALR(object):
                 print('\nFim inesperado do código fonte')
                 return
 
+            print('Fita:', item, 'Traduzido:', self.translator[item.get('state')])
+            print('Pilha:', self.stack)
+            print('Tabela', self.table[self.stack[-1]])
+
             try:
                 translated_state = self.translator[item.get('state')]  # estado traduzido AFD -> LALR
                 action_obj = self.table[self.stack[-1]][translated_state]
@@ -192,7 +194,8 @@ class LALR(object):
                 A ação empilha o código do token (state) seguido do estado da ação atual
                 Em seguida, movimenta a leitura na fita (TS)
                 """
-                self.stack.append(item.get('state'))
+                translated_state = self.translator[item.get('state')]
+                self.stack.append(translated_state)
                 self.stack.append(next_state)
                 i += 1
 
@@ -204,20 +207,13 @@ class LALR(object):
                 """
                 prod = self.productions.get(next_state)
                 size = prod.size * 2
-                # size = prod.size+1
 
-                for i in range(0, size):
+                for xx in range(0, size):
                     self.stack.pop()
 
                 curr_state = self.stack[-1]
                 self.stack.append(int(prod.nonterminal))
                 self.stack.append(self.table[curr_state][int(prod.nonterminal)].state)
-
-                # Verifica se após redução encontrou o 'aceite'
-                translated_state = self.translator[item.get('state')]
-                if self.table[self.stack[-1]][translated_state].action == 'accept':
-                    print('\nAceite')
-                    return
 
             elif action == 'goto':  # salto
                 self.stack.append(action)

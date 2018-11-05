@@ -21,12 +21,3 @@ int soma(int a, int e, float i, float o){
 
     return (a + e) - (i / o);
 }
-
-_a_c13
-a_b
-a-b
-_a____a
-_a-a
-_A_a_b123_c_C
-A_a_b123_c_C_
-
