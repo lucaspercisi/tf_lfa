@@ -4,7 +4,7 @@ import copy
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
-EPSILON = '&'
+EPSILON = '£'
 
 
 def is_sublist(sublist, list):
@@ -551,7 +551,7 @@ class Constructor(object):
                 message = 'Letra "{}" não pertence ao alfabeto da linguagem'.format(letter)
                 return recognized, state, message
 
-            print('From:', state, 'For:', letter, 'To:', line.get(letter))
+            # print('From:', state, 'For:', letter, 'To:', line.get(letter))
             state = line.get(letter)
 
         afd_data = self.afd[state]
@@ -582,6 +582,7 @@ class Constructor(object):
 
         São removidos os '\n' do código fonte antes de iniciar a construção da tabela de símbolos.
         """
+        line = None
         state = 0  # Estado corrente para reconhecimento do token no AF.
         temp_token = str()  # Variável para salvar rótulo do token.
 

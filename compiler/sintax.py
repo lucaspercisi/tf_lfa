@@ -48,6 +48,119 @@ class LALR(object):
         self.table = {}  # tabela do analisador
         self.dict = {}  # tradutor código -> elemento
         self.productions = {}  # produções da gramática LC
+        # dicionário tradutor de número de estado do AF para número do LALR
+        self.translator = {
+            186: 59,  # int
+            202: 53,  # float
+            193: 64,  # void
+            192: 45,  # char
+            209: 60,  # return
+            171: 58,  # if
+            204: 65,  # while
+            199: 52,  # else
+            181: 55,  # for
+            173: 51,  # do
+            203: 43,  # break
+            213: 48,  # continue
+            207: 63,  # switch
+            190: 44,  # case
+            212: 50,  # default
+            157: 34,  # <
+            147: 40,  # >
+            71: 18,  # :
+            72: 11,  # (
+            73: 12,  # )
+            141: 37,  # =
+            76: 39,  # ==
+            78: 36,  # <=
+            80: 41,  # >=
+            82: 6,  # !=
+            156: None,  # ' NÃO MAPEADO, NÃO USAMOS STRINGS, NÃO MUDEI PARA NÃO TER QUE REFAZER O TRADUTOR
+            148: None,  # " NÃO MAPEADO, NÃO USAMOS STRINGS, NÃO MUDEI PARA NÃO TER QUE REFAZER O TRADUTOR
+            87: 25,  # {
+            88: 29,  # }
+            89: 21,  # [
+            90: 22,  # ]
+            91: 19,  # ;
+            155: 31,  # +
+            146: 3,  # -
+            149: 13,  # *
+            152: 16,  # /
+            96: 15,  # ,
+            98: 33,  # +=
+            100: 38,  # -=
+            102: 14,  # *=
+            104: 17,  # /=
+            106: 24,  # ^=
+            108: 10,  # &=
+            110: 28,  # |=
+            111: 20,  # ?
+            113: 27,  # ||
+            115: 9,  # &&
+            117: 42,  # >>
+            119: 35,  # <<
+            120: 7,  # %
+            151: 26,  # |
+            145: 23,  # ^
+            150: 8,  # &
+            153: 5,  # !
+            125: 30,  # ~
+            127: 32,  # ++
+            129: 4,  # --
+            130: 96,  # variável
+            143: 96,  # variável
+            139: 96,  # variável
+            159: 96,  # variável
+            160: 96,  # variável
+            142: 96,  # variável
+            158: 96,  # variável
+            154: 96,  # variável
+            138: 96,  # variável
+            140: 96,  # variável
+            144: 96,  # variável
+            161: 96,  # variável
+            162: 96,  # variável
+            163: 96,  # variável
+            164: 96,  # variável
+            165: 96,  # variável
+            166: 96,  # variável
+            167: 96,  # variável
+            168: 96,  # variável
+            169: 96,  # variável
+            170: 96,  # variável
+            172: 96,  # variável
+            174: 96,  # variável
+            175: 96,  # variável
+            176: 96,  # variável
+            177: 96,  # variável
+            178: 96,  # variável
+            179: 96,  # variável
+            180: 96,  # variável
+            182: 96,  # variável
+            183: 96,  # variável
+            184: 96,  # variável
+            185: 96,  # variável
+            187: 96,  # variável
+            188: 96,  # variável
+            189: 96,  # variável
+            191: 96,  # variável
+            194: 96,  # variável
+            195: 96,  # variável
+            196: 96,  # variável
+            197: 96,  # variável
+            198: 96,  # variável
+            200: 96,  # variável
+            201: 96,  # variável
+            205: 96,  # variável
+            206: 96,  # variável
+            208: 96,  # variável
+            210: 96,  # variável
+            211: 96,  # variável
+            137: 49,  # int
+            136: 54,  # float
+            214: 1,  # erro
+            0: 0  # EOF
+        }
 
     def analyze(self):
         """
@@ -65,7 +178,8 @@ class LALR(object):
                 return
 
             try:
-                action_obj = self.table[self.stack[-1]][item.get('state')]
+                translated_state = self.translator[item.get('state')]  # estado traduzido AFD -> LALR
+                action_obj = self.table[self.stack[-1]][translated_state]
             except KeyError:
                 print('\nErro de sintaxe na linha {}, token "{}"'.format(item.get('line'), item.get('label')))
                 return
@@ -100,7 +214,8 @@ class LALR(object):
                 self.stack.append(self.table[curr_state][int(prod.nonterminal)].state)
 
                 # Verifica se após redução encontrou o 'aceite'
-                if self.table[self.stack[-1]][item.get('state')].action == 'accept':
+                translated_state = self.translator[item.get('state')]
+                if self.table[self.stack[-1]][translated_state].action == 'accept':
                     print('\nAceite')
                     return
 
@@ -152,37 +267,3 @@ class LALR(object):
                 action_symbol = int(action.get('SymbolIndex'))
                 action_obj = Action(ACTION_TYPES[action.get('Action')], int(action.get('Value')))
                 self.table[curr_state][action_symbol] = action_obj
-
-    def mapping_from_gold(self, constructor):
-        # MAPEAMENTO DOS ESTADOS GERADOS NO AF PARA OS ESTADOS DO GOLD PARSER
-
-        values_ditc = list(self.dict.values())
-
-        for line_ts in self.st:
-            for line_g in range(len(self.dict)):
-
-                # MAPEIA TOKENS IGUAIS
-                if line_ts['label'] == self.dict[line_g]:
-                    line_ts['state'] = line_g
-                    line_ts['status'] = "MAPPED (self)"
-
-                if line_ts['state'] == 134:
-                    line_ts['state'] = values_ditc.index('DecLiteral')
-                    line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('DecLiteral')])
-
-                #TODO: Verificar gramática de reais.
-                # if line_ts['state'] == 134:
-                #     line_ts['state'] = values_ditc.index('FloatLiteral')
-                #     line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('FloatLiteral')])
-
-                if line_ts['state'] == values_ditc.index('Error'):
-                    line_ts['state'] = values_ditc.index('Error')
-                    line_ts['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('Error')])
-
-        for line in self.st:
-            try:
-                if line['state'] == constructor.error_state or line['status']:
-                    continue
-            except KeyError:
-                line['state'] = values_ditc.index('Id')
-                line['status'] = "MAPPED ({})".format(values_ditc[values_ditc.index('Id')])
