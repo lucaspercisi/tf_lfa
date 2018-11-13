@@ -116,44 +116,44 @@ class LALR(object):
             153: 57,  # variável
             144: 57,  # variável
             154: 57,  # variável
-            155: 57,
-            156: 57,
-            157: 57,
-            158: 57,
-            159: 57,
-            160: 57,
-            161: 57,
-            163: 57,
-            164: 57,
-            165: 57,
-            166: 57,
-            168: 57,
-            169: 57,
-            170: 57,
-            171: 57,
-            172: 57,
-            173: 57,
-            174: 57,
-            175: 57,
-            177: 57,
-            178: 57,
-            180: 57,
-            181: 57,
-            182: 57,
-            185: 57,
-            186: 57,
-            188: 57,
-            190: 57,
-            191: 57,
-            192: 57,
-            193: 57,
-            194: 57,
-            195: 57,
-            198: 57,
-            199: 57,
-            201: 57,
-            203: 57,
-            205: 57,
+            155: 57,  # variável
+            156: 57,  # variável
+            157: 57,  # variável
+            158: 57,  # variável
+            159: 57,  # variável
+            160: 57,  # variável
+            161: 57,  # variável
+            163: 57,  # variável
+            164: 57,  # variável
+            165: 57,  # variável
+            166: 57,  # variável
+            168: 57,  # variável
+            169: 57,  # variável
+            170: 57,  # variável
+            171: 57,  # variável
+            172: 57,  # variável
+            173: 57,  # variável
+            174: 57,  # variável
+            175: 57,  # variável
+            177: 57,  # variável
+            178: 57,  # variável
+            180: 57,  # variável
+            181: 57,  # variável
+            182: 57,  # variável
+            185: 57,  # variável
+            186: 57,  # variável
+            188: 57,  # variável
+            190: 57,  # variável
+            191: 57,  # variável
+            192: 57,  # variável
+            193: 57,  # variável
+            194: 57,  # variável
+            195: 57,  # variável
+            198: 57,  # variável
+            199: 57,  # variável
+            201: 57,  # variável
+            203: 57,  # variável
+            205: 57,  # variável
             134: 49,  # int
             132: 54,  # float
             208: 1,  # erro
@@ -175,9 +175,9 @@ class LALR(object):
                 print('\nFim inesperado do código fonte')
                 return
 
-            print('Fita:', item, 'Traduzido:', self.translator[item.get('state')])
+            print('Fita:', self.translator[item.get('state')])
             print('Pilha:', self.stack)
-            print('Tabela', self.table[self.stack[-1]])
+            print('Tabela:', self.table[self.stack[-1]])
 
             try:
                 translated_state = self.translator[item.get('state')]  # estado traduzido AFD -> LALR
@@ -185,6 +185,8 @@ class LALR(object):
             except KeyError:
                 print('\nErro de sintaxe na linha {}, token "{}"'.format(item.get('line'), item.get('label')))
                 return
+            else:
+                print('Ação:', action_obj, '\n---')
 
             action = action_obj.action
             next_state = action_obj.state
@@ -194,7 +196,6 @@ class LALR(object):
                 A ação empilha o código do token (state) seguido do estado da ação atual
                 Em seguida, movimenta a leitura na fita (TS)
                 """
-                translated_state = self.translator[item.get('state')]
                 self.stack.append(translated_state)
                 self.stack.append(next_state)
                 i += 1
@@ -216,22 +217,11 @@ class LALR(object):
                 self.stack.append(self.table[curr_state][int(prod.nonterminal)].state)
 
             elif action == 'goto':  # salto
-                self.stack.append(action)
-                self.stack.append(next_state)
-                self.stack.pop()
-                self.stack.pop()
+                pass
 
             elif action == 'accept':
                 print('\nAceite')
                 return
-
-    def is_terminal(self, sy):
-        """
-        Verifica se o símbolo informado é terminal
-        :param sy: str: símbolo
-        :return: boolean: True se for terminal
-        """
-        return not sy.istitle()  # no arquivo, os não-terminais tem nomes com letra maiúscula no início das palavras
 
     def load(self, filename='gold.xml'):
         """

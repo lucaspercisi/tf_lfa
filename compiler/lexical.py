@@ -44,7 +44,7 @@ class Constructor(object):
         self.st = list()  # Tabela de Símbolos
         self.separators = list()  # Separadores da linguagem
         self.double_separators = list()  # Separadores da linguagem
-        self.sourceCode = list(open(self.source_code_path, 'r'))  # codigo fonte inserido numa lista para criação da tabela de simbolos
+        self.sourceCode = open(self.source_code_path, 'r').readlines()  # codigo fonte inserido numa lista para criação da tabela de simbolos
 
     def print_afnd(self):
         print('-------------------------------------------------------------------------------------------------------')
@@ -582,27 +582,27 @@ class Constructor(object):
 
         São removidos os '\n' do código fonte antes de iniciar a construção da tabela de símbolos.
         """
-        line = None
+        lineno = None
         state = 0  # Estado corrente para reconhecimento do token no AF.
         temp_token = str()  # Variável para salvar rótulo do token.
 
-        for line in range(len(self.sourceCode)):
-            for i, symbol in enumerate(self.sourceCode[line]):
+        for lineno, line in enumerate(self.sourceCode):
+            for i, symbol in enumerate(line):
 
                 try:
                     temp_token = temp_token + symbol  # Guarda simbolo para criar o rótulo.
                     state, is_final = (self.symbol_recognition(state, symbol))  # Busca tokens no AF
 
                     if symbol not in self.separators \
-                            and symbol + self.sourceCode[line][i + 1] \
+                            and symbol + line[i + 1] \
                             not in self.double_separators \
                             and is_final:
 
                         try:
-                            if self.sourceCode[line][i + 1] in self.separators \
-                                    or self.sourceCode[line][i + 1] + self.sourceCode[line][i + 2] \
+                            if line[i + 1] in self.separators \
+                                    or line[i + 1] + line[i + 2] \
                                     in self.double_separators:
-                                self.st.append({'line': line, 'state': state, 'label': temp_token})  # Adiciona token reconhecido na tabela de símbolos
+                                self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})  # Adiciona token reconhecido na tabela de símbolos
                                 state = 0  # Reinicia o estado de busca.
                                 temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
@@ -612,23 +612,23 @@ class Constructor(object):
                     elif symbol in self.separators and is_final:
 
                         # Reconhece separadores duplos (ex: '==' )
-                        if symbol + self.sourceCode[line][i + 1] in self.double_separators:  # and self.sourceCode[line][i + 1] == symbol:
+                        if symbol + line[i + 1] in self.double_separators:  # and line[i + 1] == symbol:
                             pass
 
                         # Reconhece separadores simples (ex: ':' )
-                        elif symbol + self.sourceCode[line][i + 1] not in self.separators:
-                            self.st.append({'line': line, 'state': state, 'label': temp_token})
+                        elif symbol + line[i + 1] not in self.separators:
+                            self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                         # Reconhece separadores simples que estão juntos (ex: '):' )
-                        elif symbol + self.sourceCode[line][i + 1] in self.separators and self.sourceCode[line][i + 1] != symbol:
-                            self.st.append({'line': line, 'state': state, 'label': temp_token})
+                        elif symbol + line[i + 1] in self.separators and line[i + 1] != symbol:
+                            self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                 except IndexError:  # Exceção para os últimos simbolos de cada string.
-                    self.st.append({'line': line, 'state': state, 'label': temp_token})
+                    self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                     state = 0  # Reinicia o estado de busca.
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
@@ -636,7 +636,7 @@ class Constructor(object):
                     state = 0  # Reinicia o estado de busca.
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
-        self.st.append({'line': line, 'state': state, 'label': 'EOF'})
+        self.st.append({'line': lineno+1, 'state': state, 'label': 'EOF'})
 
 
     def build_separators(self):
@@ -648,12 +648,8 @@ class Constructor(object):
                                   '--']
 
     def clean_source_code(self):
-        for line in range(len(self.sourceCode)):
-            self.sourceCode[line] = self.sourceCode[line].replace('\n', '')
-
-        # Não sei o por quê, mas precisou. Na quebra de linha do código fonte, adicionou uma lista.
-        while '' in self.sourceCode:
-            self.sourceCode.remove('')
+        for lineno, line in enumerate(self.sourceCode):
+            self.sourceCode[lineno] = line.strip()  # remove espaços vazios e "enters" nas extremidades das linhas
 
     def show_symbol_table(self):
         for item in self.st:

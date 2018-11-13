@@ -10,11 +10,11 @@ file_path = os.path.join(dir_path, 'inputs')
 # AUTÔMATO FINITO
 constructor = Constructor()
 
-constructor.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
-constructor.remove_epsilon()  # remove os EPSILON transições
-constructor.afnd_determinization()  # determiniza o afnd
-constructor.remove_dead()  # remove os estados mortos
-constructor.remove_unreachable()  # remove os estados inatingíveis
+# constructor.fill_afnd()  # preenche o AFND com os dados do arquivo de entrada
+# constructor.remove_epsilon()  # remove os EPSILON transições
+# constructor.afnd_determinization()  # determiniza o afnd
+# constructor.remove_dead()  # remove os estados mortos
+# constructor.remove_unreachable()  # remove os estados inatingíveis
 # constructor.print_afd()  # imprime o AFD finalizado
 
 # carrega os objetos em arquivos para congelá-los
@@ -23,11 +23,13 @@ constructor.remove_unreachable()  # remove os estados inatingíveis
 # with open(os.path.join(file_path, 'alpha.object'), 'wb') as alpha_object_file:
 #     pickle.dump(constructor.alphabet, alpha_object_file)
 
-# lê os objetos dos arquivos
+# lê os objetos "congelados" dos arquivos
 with open(os.path.join(file_path, 'afd.object'), 'rb') as afd_object_file:
     constructor.afd = pickle.load(afd_object_file)
 with open(os.path.join(file_path, 'alpha.object'), 'rb') as alpha_object_file:
     constructor.alphabet = pickle.load(alpha_object_file)
+
+constructor.print_afd()  # imprime o AFD finalizado
 
 # recognizing_test_tokens = ['int', 'float', 'void', 'char', 'return', 'if', 'while', 'else', 'for', 'do', 'break', 'continue', 'switch', 'case', 'default', '<', '>', ':', '(', ')', '=', '==', '<=', '>=', '!=', '{', '}', '[', ']', ';', '+', '-', '*', '/', ', ', '+=', '-=', '*=', '/=', '^=', '&=', '|=', '?', '||', '&&', '>>', '<<', '%', '|', '^', '&', '!', '~', '++', '--', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'variavel_', '1', '88', '564', '-120', '-5.18', '0.0', '1000.0000037']
 #
@@ -55,7 +57,7 @@ with open(os.path.join(file_path, 'alpha.object'), 'rb') as alpha_object_file:
 constructor.build_separators()  # Constroí as listas contendo os separadores da linguagem.
 constructor.clean_source_code()  # Limpa o código-fonte para construção da self.ts.
 constructor.build_symbol_table()  # Constrói a Tabela de Símbolos de acordo com o AF
-# constructor.show_symbol_table()  # Mostra Tabela de Símbolos
+constructor.show_symbol_table()  # Mostra Tabela de Símbolos
 
 # Analisador sintático LALR
 lalr = LALR(st=constructor.st)
