@@ -561,7 +561,8 @@ class Constructor(object):
         return recognized, state, message
 
     def symbol_recognition(self, state=0, symbol=''):
-
+        if symbol.strip() and symbol not in self.alphabet:  # ignora espaços e provoca erro léxico quando não pertence ao alfabeto
+            return self.error_state, True
         _state = self.afd[state].get(symbol)
         _final = self.afd[_state].final
         return _state, _final
@@ -602,6 +603,11 @@ class Constructor(object):
                             if line[i + 1] in self.separators \
                                     or line[i + 1] + line[i + 2] \
                                     in self.double_separators:
+
+                                if state == self.error_state:
+                                    print('Erro léxico na linha {} token {}\n'.format(lineno+1, temp_token))
+                                    return False
+
                                 self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})  # Adiciona token reconhecido na tabela de símbolos
                                 state = 0  # Reinicia o estado de busca.
                                 temp_token = ''  # Limpa váriavel para guardar o rótulo.
@@ -617,17 +623,29 @@ class Constructor(object):
 
                         # Reconhece separadores simples (ex: ':' )
                         elif symbol + line[i + 1] not in self.separators:
+                            if state == self.error_state:
+                                print('Erro léxico na linha {} token {}\n'.format(lineno + 1, temp_token))
+                                return False
+
                             self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                         # Reconhece separadores simples que estão juntos (ex: '):' )
                         elif symbol + line[i + 1] in self.separators and line[i + 1] != symbol:
+                            if state == self.error_state:
+                                print('Erro léxico na linha {} token {}\n'.format(lineno + 1, temp_token))
+                                return False
+
                             self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                             state = 0  # Reinicia o estado de busca.
                             temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
                 except IndexError:  # Exceção para os últimos simbolos de cada string.
+                    if state == self.error_state:
+                        print('Erro léxico na linha {} token {}\n'.format(lineno + 1, temp_token))
+                        return False
+
                     self.st.append({'line': lineno+1, 'state': state, 'label': temp_token})
                     state = 0  # Reinicia o estado de busca.
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
@@ -637,6 +655,7 @@ class Constructor(object):
                     temp_token = ''  # Limpa váriavel para guardar o rótulo.
 
         self.st.append({'line': lineno+1, 'state': state, 'label': 'EOF'})
+        return True
 
 
     def build_separators(self):
